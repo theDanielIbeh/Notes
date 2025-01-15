@@ -10,9 +10,9 @@ data class Note(
     @ColumnInfo(name = NoteTableConstants.ID)
     val id: Int? = null,
     @ColumnInfo(name = NoteTableConstants.TITLE)
-    val title: String,
+    val title: String = "",
     @ColumnInfo(name = NoteTableConstants.CONTENT)
-    val content: String,
+    val content: String = "",
     @ColumnInfo(name = NoteTableConstants.DELETE_FLAG)
     val deleteFlag: Int = 0,
     @ColumnInfo(name = NoteTableConstants.TIME_STAMP)

@@ -1,35 +1,37 @@
 package com.example.notes.screens.noteList
 
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -38,6 +40,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,28 +50,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.notes.R
-import com.example.notes.domain.model.Note
 import com.example.notes.ui.theme.NotesTheme
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun NoteListScreen(
-    navController: NavController = rememberNavController(),
     viewModel: NoteListViewModel = koinViewModel<NoteListViewModel>(),
+    onNoteClick: (Int?) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsState()
@@ -76,11 +73,22 @@ fun NoteListScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var showMenu by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) { viewModel.getNotes()}
     // Main Background
     Scaffold(
         topBar = { AppBar() },
-        modifier = modifier.fillMaxSize(),
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { onNoteClick(null) },
+                modifier = modifier.padding(16.dp),
+                containerColor = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Icon(Icons.Filled.Add, "Add", tint = MaterialTheme.colorScheme.onPrimary)
+            }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        modifier = modifier.fillMaxSize()
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -110,25 +118,16 @@ fun NoteListScreen(
 
                 LazyColumn(
                     modifier = Modifier,
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(
-                        key = { it.id!! },
-                        items = listOf(
-                            Note(
-                                1,
-                                "Tomorrow's Tasks",
-                                "Sunday 6:00 - 7:00: Pray and bathe"
-                            )
-                        )
+                        key = { it.id ?: 0 },
+                        items = state.notes
                     ) { note ->
                         NoteItem(
                             note,
                             onClick = {
-                                Log.d(
-                                    "NoteListScreen",
-                                    "Note clicked: ${note.title}"
-                                )
+                                onNoteClick(note.id)
                             },
                             onLongClick = {
                                 viewModel.onEvent(NoteListEvent.SelectNote(note))
@@ -148,12 +147,14 @@ fun NoteListScreen(
                     coroutineScope.launch {
                         val result = snackbarHostState.showSnackbar(
                             message = "Note Deleted",
-                            actionLabel = "Undo"
+                            actionLabel = "Undo",
+                            duration = SnackbarDuration.Long
                         )
                         if (result == SnackbarResult.ActionPerformed) {
                             viewModel.onEvent(NoteListEvent.RestoreNote)
                         }
                     }
+                    showMenu = false
                 }
             )
         }
@@ -176,7 +177,9 @@ fun AppBar(
                 modifier = Modifier
                     .height(36.dp)
                     .width(24.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background)
+                    .windowInsetsPadding(WindowInsets(0.dp)),
                 tint = MaterialTheme.colorScheme.tertiaryContainer
             )
         },
@@ -204,11 +207,11 @@ fun AppBar(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.wrapContentWidth()
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.search),
-                        contentDescription = null,
-                        modifier = Modifier
-                    )
+//                    Icon(
+//                        painter = painterResource(R.drawable.search),
+//                        contentDescription = null,
+//                        modifier = Modifier
+//                    )
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         painter = painterResource(R.drawable.ic_ellipsis),
@@ -219,6 +222,7 @@ fun AppBar(
                 }
             }
         },
+        windowInsets = WindowInsets(0.dp),
         modifier = modifier.fillMaxWidth()
     )
 }
@@ -248,7 +252,7 @@ fun SearchBar(value: String, onValueChange: (String) -> Unit, modifier: Modifier
         modifier = modifier
             .fillMaxWidth()
             .background(
-                shape = RoundedCornerShape(15.dp),
+                shape = RoundedCornerShape(50.dp),
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             ),
         textStyle = TextStyle(
@@ -281,58 +285,8 @@ fun SearchBar(value: String, onValueChange: (String) -> Unit, modifier: Modifier
             },
             trailingIcon = {},
             container = {},
+            contentPadding = PaddingValues(0.dp)
         )
-    }
-}
-
-@Composable
-private fun NoteItem(
-    note: Note,
-    onClick: () -> Unit,
-    onLongClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = { onClick() },
-                    onLongPress = { onLongClick() }
-                )
-            },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary
-        )
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize()
-        ) {
-            Text(
-                text = note.title,
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.fillMaxSize()
-            )
-            Text(
-                text = note.content,
-                color = MaterialTheme.colorScheme.secondary,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 4.dp)
-            )
-        }
     }
 }
 

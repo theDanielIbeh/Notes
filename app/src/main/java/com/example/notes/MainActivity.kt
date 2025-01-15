@@ -23,7 +23,7 @@ class MainActivity : ComponentActivity() {
             KoinAndroidContext {
                 NotesTheme {
                     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        NoteListScreen(modifier = Modifier.padding(innerPadding))
+                        NotesMain(modifier = Modifier.padding(innerPadding))
                     }
                 }
             }

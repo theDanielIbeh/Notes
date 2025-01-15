@@ -18,7 +18,7 @@ interface NoteDao {
     @Query("SELECT * FROM $NOTE_TABLE WHERE ${NoteTableConstants.ID} = :id")
     suspend fun getNoteById(id: Int): Note?
 
-    @Query("SELECT * FROM $NOTE_TABLE WHERE ${NoteTableConstants.DELETE_FLAG} = 0")
+    @Query("SELECT * FROM $NOTE_TABLE WHERE ${NoteTableConstants.DELETE_FLAG} = 0 ORDER BY ${NoteTableConstants.TIME_STAMP} DESC")
     fun getActiveNotes(): Flow<List<Note>>
 
     @Query("SELECT * FROM $NOTE_TABLE WHERE ${NoteTableConstants.DELETE_FLAG} = 1 and ${NoteTableConstants.TIME_STAMP} > :timestamp")

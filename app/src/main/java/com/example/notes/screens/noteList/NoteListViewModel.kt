@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.notes.domain.useCase.NoteUseCases
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class NoteListViewModel(
@@ -17,10 +18,10 @@ class NoteListViewModel(
         when (event) {
             is NoteListEvent.DeleteNote -> {
                 viewModelScope.launch {
-                    noteUseCases.deleteNote(event.noteId)
                     state.value = state.value.copy(
                         recentlyDeletedNote = noteUseCases.getNote(event.noteId)
                     )
+                    noteUseCases.deleteNote(event.noteId)
                 }
             }
 
@@ -54,9 +55,9 @@ class NoteListViewModel(
         }
     }
 
-    private fun getNotes() {
+    fun getNotes() {
         viewModelScope.launch {
-            noteUseCases.getNotes(state.value.query).collect { notes ->
+            noteUseCases.getNotes(state.value.query).collectLatest { notes ->
                 state.value = state.value.copy(
                     notes = notes
                 )
