@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "630826661385",
+    "project_id": "crazy-notess",
+    "storage_bucket": "crazy-notess.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630826661385:android:f39f98e0df862dc7bf2ad8",
+        "android_client_info": {
+          "package_name": "com.example.notes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "630826661385-pr4h6504atb1al45m5puncftr2jgkurj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.notes",
+            "certificate_hash": "d4b41de4e3b0daabf1b6b98685b3053eeb2f2bf9"
+          }
+        },
+        {
+          "client_id": "630826661385-pql6uo97kh7107t0kr1d0h4ruh3bana5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTowwe1C6TSPrrQV4dF5mfG_9yP0iotjk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "630826661385-pql6uo97kh7107t0kr1d0h4ruh3bana5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

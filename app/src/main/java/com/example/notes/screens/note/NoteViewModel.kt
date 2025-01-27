@@ -1,13 +1,11 @@
 package com.example.notes.screens.note
 
 import android.app.Application
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.notes.domain.model.InvalidNoteException
 import com.example.notes.domain.useCase.NoteUseCases
-import com.example.notes.screens.noteList.NoteListEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -47,19 +45,24 @@ class NoteViewModel(
                 viewModelScope.launch {
                     try {
                         noteUseCases.insertNote(event.note)
+                        state.value = state.value.copy(
+                            note = noteUseCases.getNoteByTimeStamp(event.note.timeStamp)
+                                ?: return@launch
+                        )
                     } catch (e: InvalidNoteException) {
-                        if (state.value.note.id != -1) {
+                        if (state.value.note.id != null) {
                             Toast.makeText(application, e.message, Toast.LENGTH_SHORT).show()
                         }
                     }
-                    event.popUpScreen()
+                    event.popUpScreen?.let { it() }
                 }
             }
 
             is NoteEvent.EditTitle -> {
                 state.value = state.value.copy(
                     note = state.value.note.copy(
-                        title = event.title
+                        title = event.title,
+                        timeStamp = System.currentTimeMillis()
                     )
                 )
             }
@@ -67,7 +70,8 @@ class NoteViewModel(
             is NoteEvent.EditContent -> {
                 state.value = state.value.copy(
                     note = state.value.note.copy(
-                        content = event.content
+                        content = event.content,
+                        timeStamp = System.currentTimeMillis()
                     )
                 )
             }

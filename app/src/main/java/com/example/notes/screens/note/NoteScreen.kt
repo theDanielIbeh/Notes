@@ -1,6 +1,5 @@
 package com.example.notes.screens.note
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -9,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,8 +22,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +35,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -48,6 +50,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -56,7 +59,6 @@ import androidx.compose.ui.unit.sp
 import com.example.notes.R
 import com.example.notes.domain.util.Helper.convertTimestampToFormattedDate
 import org.koin.androidx.compose.koinViewModel
-import java.util.Date
 
 @Composable
 fun NoteScreen(
@@ -81,6 +83,23 @@ fun NoteScreen(
                             popUpScreen = popUpScreen
                         )
                     )
+                },
+                onDoneClicked = {
+                    viewModel.onEvent(
+                        NoteEvent.SaveNote(
+                            note = state.note,
+                        )
+                    )
+                },
+                onDeleteClicked = {
+                    state.note.id?.let {
+                        viewModel.onEvent(
+                            NoteEvent.DeleteNote(
+                                noteId = it
+                            )
+                        )
+                    }
+                    popUpScreen()
                 }
             )
         },
@@ -133,14 +152,24 @@ fun NoteContent(
     val interactionSource = remember { MutableInteractionSource() }
     val focusRequester = remember { FocusRequester() }
 
-//    LaunchedEffect(title.isNotEmpty()) {
-//        focusRequester.requestFocus()
-//    }
+    LaunchedEffect(title.isEmpty()) {
+        focusRequester.requestFocus()
+    }
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDrag = { change, _ ->
+                        change.consume()
+                    },
+                    onDragStart = {
+                        toggleDate()
+                    },
+                )
+            }
     ) {
         AnimatedVisibility(
             visible = showDate,
@@ -196,16 +225,6 @@ fun NoteContent(
             modifier = Modifier
                 .padding(0.dp)
                 .fillMaxSize()
-                .pointerInput(Unit) {
-                    detectDragGestures(
-                        onDrag = { change, _ ->
-                            change.consume()
-                        },
-                        onDragStart = {
-                            toggleDate()
-                        },
-                    )
-                }
         ) { innerTextField ->
             TextFieldDefaults.DecorationBox(
                 value = title,
@@ -231,6 +250,8 @@ fun NoteContent(
 @Composable
 fun AppBar(
     onBackPressed: () -> Unit,
+    onDoneClicked: () -> Unit,
+    onDeleteClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -240,23 +261,22 @@ fun AppBar(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
+                    .clickable { onBackPressed() }
             ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_back_arrow),
-                contentDescription = null,
-                modifier = Modifier
-                    .height(36.dp)
-                    .width(24.dp)
-                    .fillMaxWidth()
-                    .clickable { onBackPressed() },
-                tint = MaterialTheme.colorScheme.tertiaryContainer
-            )
+                Icon(
+                    painter = painterResource(R.drawable.ic_back_arrow),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(36.dp)
+                        .width(24.dp)
+                        .fillMaxWidth(),
+                    tint = MaterialTheme.colorScheme.tertiaryContainer
+                )
 
                 Text(
                     text = "All Notes",
                     color = MaterialTheme.colorScheme.tertiaryContainer,
                     fontSize = 14.sp,
-                    modifier = Modifier.clickable { onBackPressed() },
                 )
             }
         },
@@ -280,19 +300,67 @@ fun AppBar(
 //                        modifier = Modifier,
 //                        tint = MaterialTheme.colorScheme.tertiaryContainer
 //                    )
+//                    Icon(
+//                        painter = painterResource(R.drawable.ic_ellipsis),
+//                        contentDescription = null,
+//                        modifier = Modifier.size(24.dp),
+//                        tint = MaterialTheme.colorScheme.tertiaryContainer
+//                    )
+                    DropdownMenu(
+                        onShareClick = { /* Handle Share Action */ },
+                        onDeleteClick = onDeleteClicked
+
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Icon(
-                        painter = painterResource(R.drawable.ic_ellipsis),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.tertiaryContainer
+                    Text(
+                        text = "Done",
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        fontSize = 14.sp,
+                        modifier = Modifier.clickable { onDoneClicked() },
                     )
                 }
             }
         },
         windowInsets = WindowInsets(0.dp),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background,
+        ),
         modifier = modifier.fillMaxWidth()
     )
+}
+
+@Composable
+fun DropdownMenu(
+    onShareClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box(
+        modifier = Modifier
+            .padding(8.dp)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_ellipsis),
+            contentDescription = null,
+            modifier = Modifier
+                .size(24.dp)
+                .clickable { expanded = !expanded },
+            tint = MaterialTheme.colorScheme.tertiaryContainer
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.share)) },
+                onClick = { onShareClick() }
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.delete)) },
+                onClick = { onDeleteClick() }
+            )
+        }
+    }
 }
 
 @Composable

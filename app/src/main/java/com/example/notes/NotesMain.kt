@@ -7,6 +7,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -19,12 +20,17 @@ import com.example.notes.domain.util.Constants.NOTE_DEFAULT_ID
 import com.example.notes.domain.util.Constants.NOTE_ID
 import com.example.notes.screens.note.NoteScreen
 import com.example.notes.screens.noteList.NoteListScreen
+import com.example.notes.screens.signIn.SignInScreen
+import com.example.notes.screens.signUp.SignUpScreen
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.Serializable
+import org.koin.androidx.compose.koinViewModel
+
 
 @Composable
 fun NotesMain(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Surface(color = MaterialTheme.colorScheme.background, modifier = modifier) {
         val snackbarHostState = remember { SnackbarHostState() }
@@ -35,7 +41,7 @@ fun NotesMain(
         ) { innerPaddingModifier ->
             NavHost(
                 navController = appState.navController,
-                startDestination = Route.NotesList,
+                startDestination = if (FirebaseAuth.getInstance().currentUser == null) Route.Login else Route.NotesList,
                 modifier = Modifier.padding(innerPaddingModifier)
             ) {
                 notesGraph(appState)
@@ -72,14 +78,21 @@ fun NavGraphBuilder.notesGraph(appState: NotesAppState) {
     }
 
     composable<Route.Login> {
-//        SignInScreen(
-//            openScreen = { route -> appState.navigate(route) },
-//            openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) }
-//        )
+        SignInScreen(
+            onNavigateToSignUp = { appState.clearAndNavigate(Route.Register) },
+            openAndPopUp = {
+                appState.clearAndNavigate(Route.NotesList)
+            },
+        )
     }
 
     composable<Route.Register> {
-//        SignUpScreen(openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) })
+        SignUpScreen(
+            onNavigateToSignIn = { appState.clearAndNavigate(Route.Login) },
+            openAndPopUp = {
+                appState.clearAndNavigate(Route.NotesList)
+            }
+        )
     }
 }
 

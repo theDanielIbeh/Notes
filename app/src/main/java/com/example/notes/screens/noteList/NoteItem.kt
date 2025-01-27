@@ -49,7 +49,6 @@ fun NoteItem(
                 text = note.title,
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.fillMaxSize()
@@ -58,7 +57,6 @@ fun NoteItem(
                 text = note.content,
                 color = MaterialTheme.colorScheme.secondary,
                 fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

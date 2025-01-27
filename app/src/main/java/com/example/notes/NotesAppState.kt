@@ -1,9 +1,8 @@
 package com.example.notes
 
-import android.util.Log
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Stable
 import androidx.navigation.NavHostController
-import androidx.compose.material3.SnackbarHostState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -25,15 +24,14 @@ class NotesAppState(
     }
 
     fun popUp() {
-        val popped = navController.popBackStack()
-        Log.d("Navigation", "popBackStack() called: $popped")
+        navController.popBackStack()
     }
 
     fun <T : Any> navigate(route: T) {
-        navController.navigate(route)
+        navController.navigate(route) { launchSingleTop = true }
     }
 
-    fun <T : Any> navigateAndPopUp(route: T, popUp: String) {
+    fun <T : Any> navigateAndPopUp(route: T, popUp: T) {
         navController.navigate(route) {
             launchSingleTop = true
             popUpTo(popUp) { inclusive = true }

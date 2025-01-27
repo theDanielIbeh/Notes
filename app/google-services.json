@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "630826661385",
+    "project_id": "crazy-notess",
+    "storage_bucket": "crazy-notess.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630826661385:android:f39f98e0df862dc7bf2ad8",
+        "android_client_info": {
+          "package_name": "com.example.notes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTowwe1C6TSPrrQV4dF5mfG_9yP0iotjk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

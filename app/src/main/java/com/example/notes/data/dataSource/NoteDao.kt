@@ -24,6 +24,9 @@ interface NoteDao {
     @Query("SELECT * FROM $NOTE_TABLE WHERE ${NoteTableConstants.DELETE_FLAG} = 1 and ${NoteTableConstants.TIME_STAMP} > :timestamp")
     fun getRecentlyDeletedNotes(timestamp: Long): Flow<List<Note>>
 
+    @Query("SELECT * FROM $NOTE_TABLE WHERE ${NoteTableConstants.TIME_STAMP} = :timeStamp")
+    suspend fun getNoteByTimeStamp(timeStamp: Long): Note?
+
     @Query("DELETE FROM $NOTE_TABLE WHERE ${NoteTableConstants.ID} = :id")
     suspend fun deleteNoteById(id: Int)
 

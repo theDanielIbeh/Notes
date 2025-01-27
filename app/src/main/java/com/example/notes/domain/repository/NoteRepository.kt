@@ -8,6 +8,7 @@ interface NoteRepository {
     fun getActiveNotes(): Flow<List<Note>>
     fun getRecentlyDeletedNotes(timestamp: Long): Flow<List<Note>>
     suspend fun getNoteById(id: Int): Note?
+    suspend fun getNoteByTimeStamp(timeStamp: Long): Note?
     suspend fun insertNote(note: Note)
     suspend fun deleteNoteById(id: Int)
 }

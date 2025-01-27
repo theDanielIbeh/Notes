@@ -1,7 +1,11 @@
 package com.example.notes.screens.noteList
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +42,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,7 +55,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
@@ -72,8 +79,9 @@ fun NoteListScreen(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     var showMenu by remember { mutableStateOf(false) }
+    var showSearchBar by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) { viewModel.getNotes()}
+    LaunchedEffect(Unit) { viewModel.getNotes() }
     // Main Background
     Scaffold(
         topBar = { AppBar() },
@@ -84,7 +92,12 @@ fun NoteListScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Icon(Icons.Filled.Add, "Add", tint = MaterialTheme.colorScheme.onPrimary)
+                Icon(
+                    Icons.Filled.Add,
+                    "Add",
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(36.dp)
+                )
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -109,31 +122,52 @@ fun NoteListScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Search Bar
+//                AnimatedVisibility(
+//                    visible = showSearchBar,
+//                    modifier = Modifier.fillMaxWidth(),
+//                    enter = slideInVertically(),
+//                    exit = slideOutVertically()
+//                ) {
                 SearchBar(
                     value = state.query,
                     onValueChange = { viewModel.onEvent(NoteListEvent.SearchNote(it)) }
                 )
+//                }
 
                 Spacer(modifier = Modifier.height(24.dp))
-
-                LazyColumn(
-                    modifier = Modifier,
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(
-                        key = { it.id ?: 0 },
-                        items = state.notes
-                    ) { note ->
-                        NoteItem(
-                            note,
-                            onClick = {
-                                onNoteClick(note.id)
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .pointerInput(Unit) {
+                        detectDragGestures(
+                            onDrag = { change, _ ->
+                                change.consume()
                             },
-                            onLongClick = {
-                                viewModel.onEvent(NoteListEvent.SelectNote(note))
-                                showMenu = true
-                            }
+                            onDragStart = {
+                                showSearchBar = !showSearchBar
+                            },
                         )
+                    }
+                ) {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        items(
+                            key = { it.id ?: 0 },
+                            items = state.notes
+                        ) { note ->
+                            NoteItem(
+                                note,
+                                onClick = {
+                                    onNoteClick(note.id)
+                                },
+                                onLongClick = {
+                                    viewModel.onEvent(NoteListEvent.SelectNote(note))
+                                    showMenu = true
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -148,7 +182,7 @@ fun NoteListScreen(
                         val result = snackbarHostState.showSnackbar(
                             message = "Note Deleted",
                             actionLabel = "Undo",
-                            duration = SnackbarDuration.Long
+                            duration = SnackbarDuration.Short
                         )
                         if (result == SnackbarResult.ActionPerformed) {
                             viewModel.onEvent(NoteListEvent.RestoreNote)
@@ -171,17 +205,26 @@ fun AppBar(
 ) {
     TopAppBar(
         navigationIcon = {
-            Icon(
-                painter = painterResource(R.drawable.ic_back_arrow),
-                contentDescription = null,
-                modifier = Modifier
-                    .height(36.dp)
-                    .width(24.dp)
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-                    .windowInsetsPadding(WindowInsets(0.dp)),
-                tint = MaterialTheme.colorScheme.tertiaryContainer
-            )
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_back_arrow),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(36.dp)
+                        .width(24.dp)
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets(0.dp)),
+                    tint = MaterialTheme.colorScheme.tertiaryContainer
+                )
+                Text(
+                    text = "Folders",
+                    color = MaterialTheme.colorScheme.tertiaryContainer,
+                    fontSize = 14.sp
+                )
+            }
         },
         title = {
             Row(
@@ -193,16 +236,6 @@ fun AppBar(
                     .padding(end = 16.dp)
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Folders",
-                        color = MaterialTheme.colorScheme.tertiaryContainer,
-                        fontSize = 14.sp
-                    )
-                }
-                Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.wrapContentWidth()
@@ -212,7 +245,14 @@ fun AppBar(
 //                        contentDescription = null,
 //                        modifier = Modifier
 //                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.weight(1F))
+                    Icon(
+                        painter = painterResource(R.drawable.ic_profile),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.tertiaryContainer
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
                     Icon(
                         painter = painterResource(R.drawable.ic_ellipsis),
                         contentDescription = null,
@@ -223,6 +263,9 @@ fun AppBar(
             }
         },
         windowInsets = WindowInsets(0.dp),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background,
+        ),
         modifier = modifier.fillMaxWidth()
     )
 }
@@ -303,13 +346,14 @@ fun NoteOptionsMenu(
         sheetState = sheetState
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Share Note", modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onShareClick() }
-                .padding(16.dp))
+            Text(
+                stringResource(R.string.share), modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onShareClick() }
+                    .padding(16.dp))
             HorizontalDivider()
             Text(
-                "Delete",
+                stringResource(R.string.delete),
                 color = Color.Red,
                 modifier = Modifier
                     .fillMaxWidth()

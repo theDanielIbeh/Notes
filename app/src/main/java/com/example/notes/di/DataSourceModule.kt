@@ -9,8 +9,8 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val dataSourceModule = module {
-    single { provideDatabase(get()) } // Provide Application context
-    single { provideNoteDao(get()) }
+    singleOf(::provideNoteDao) // Provide Application context
+    singleOf(::provideDatabase)
 }
 
 fun provideDatabase(application: Application) : NoteDatabase =
