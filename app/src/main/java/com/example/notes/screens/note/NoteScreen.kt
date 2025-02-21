@@ -1,16 +1,15 @@
 package com.example.notes.screens.note
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import android.app.Application
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -21,8 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,7 +30,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -45,29 +41,61 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import com.example.notes.R
-import com.example.notes.domain.util.Helper.convertTimestampToFormattedDate
+import com.example.notes.screens.util.FileUtils.DOCUMENTS
+import com.example.notes.screens.util.FileUtils.PICTURES
+import com.example.notes.screens.util.FileUtils.createFileFromUri
+import com.example.notes.screens.util.FileUtils.createFilesDirectory
+import com.example.notes.screens.util.FileUtils.getUriFromFile
+import com.example.notes.screens.util.FileUtils.isImageFile
+import com.example.notes.screens.util.Helper.convertTimestampToFormattedDate
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun NoteScreen(
     noteId: Int,
     viewModel: NoteViewModel = koinViewModel<NoteViewModel>(),
+    application: Application = LocalContext.current.applicationContext as Application,
     popUpScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.state.collectAsState()
+    val attachments by viewModel.attachmentUris.collectAsState()
+
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            if (isImageFile(context = application, uri = it)) {
+                val createdFile = createFileFromUri(
+                    context = application,
+                    directoryName = createFilesDirectory(application, PICTURES),
+                    uri = it
+                )
+                createdFile?.let { file ->
+                    val attachmentUri = getUriFromFile(application, file)
+                    attachmentUri?.let { viewModel.onEvent(NoteEvent.AddAttachment(attachmentUri)) }
+                }
+            } else {
+                val createdFile = createFileFromUri(
+                    context = application,
+                    directoryName = createFilesDirectory(application, DOCUMENTS),
+                    uri = it
+                )
+                createdFile?.let { file ->
+                    val attachmentUri = getUriFromFile(application, file)
+                    attachmentUri?.let { viewModel.onEvent(NoteEvent.AddAttachment(attachmentUri)) }
+                }
+            }
+        }
+    }
+
     var showDate by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -79,7 +107,7 @@ fun NoteScreen(
                 onBackPressed = {
                     viewModel.onEvent(
                         NoteEvent.SaveNote(
-                            note = state.note,
+                            noteWithAttachments = state.noteWithAttachments,
                             popUpScreen = popUpScreen
                         )
                     )
@@ -87,12 +115,12 @@ fun NoteScreen(
                 onDoneClicked = {
                     viewModel.onEvent(
                         NoteEvent.SaveNote(
-                            note = state.note,
+                            noteWithAttachments = state.noteWithAttachments,
                         )
                     )
                 },
                 onDeleteClicked = {
-                    state.note.id?.let {
+                    state.noteWithAttachments.note.id?.let {
                         viewModel.onEvent(
                             NoteEvent.DeleteNote(
                                 noteId = it
@@ -112,6 +140,7 @@ fun NoteScreen(
                     }
 
                     BottomToolbarOptions.Attachment.name -> { /* Open attachment picker */
+                        filePickerLauncher.launch("*/*")
                     }
 
                     BottomToolbarOptions.Draw.name -> { /* Open drawing canvas */
@@ -124,124 +153,23 @@ fun NoteScreen(
         },
         modifier = modifier
     ) { innerPadding ->
-        NoteContent(
-            date = convertTimestampToFormattedDate(state.note.timeStamp),
-            title = state.note.title,
-            content = state.note.content,
-            editTitle = { viewModel.onEvent(NoteEvent.EditTitle(it)) },
-            editContent = { viewModel.onEvent(NoteEvent.EditContent(it)) },
-            showDate = showDate,
-            toggleDate = { showDate = !showDate },
-            modifier = Modifier.padding(innerPadding)
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun NoteContent(
-    date: String,
-    title: String,
-    content: String,
-    editTitle: (String) -> Unit,
-    editContent: (String) -> Unit,
-    showDate: Boolean,
-    toggleDate: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(title.isEmpty()) {
-        focusRequester.requestFocus()
-    }
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .pointerInput(Unit) {
-                detectDragGestures(
-                    onDrag = { change, _ ->
-                        change.consume()
-                    },
-                    onDragStart = {
-                        toggleDate()
-                    },
-                )
+        Column(modifier = Modifier.padding(innerPadding)) {
+            NoteContent(
+                date = convertTimestampToFormattedDate(state.noteWithAttachments.note.timeStamp),
+                title = state.noteWithAttachments.note.title,
+                content = state.noteWithAttachments.note.content,
+                editTitle = { viewModel.onEvent(NoteEvent.EditTitle(it)) },
+                editContent = { viewModel.onEvent(NoteEvent.EditContent(it)) },
+                showDate = showDate,
+                toggleDate = { showDate = !showDate }
+            )
+            Log.d("Attachments", attachments.toString())
+            if (attachments.isNotEmpty()) {
+                AttachmentPreview(
+                    application,
+                    attachments.toList(),
+                    onRemove = { viewModel.onEvent(NoteEvent.DeleteAttachment(it)) })
             }
-    ) {
-        AnimatedVisibility(
-            visible = showDate,
-            modifier = Modifier.fillMaxWidth(),
-            enter = slideInVertically(),
-            exit = slideOutVertically()
-        ) {
-            Text(
-                text = date,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .fillMaxWidth()
-            )
-        }
-        BasicTextField(
-            value = title,
-            onValueChange = { editTitle(it) },
-            textStyle = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.primary),
-            maxLines = 1,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            interactionSource = interactionSource,
-            singleLine = true,
-            modifier = Modifier
-                .padding(bottom = 8.dp)
-                .fillMaxWidth()
-                .focusRequester(focusRequester),
-        ) { innerTextField ->
-            TextFieldDefaults.DecorationBox(
-                value = title,
-                innerTextField = innerTextField,
-                placeholder = {
-                    Text(
-                        text = "Title",
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                },
-                enabled = true,
-                singleLine = true,
-                visualTransformation = VisualTransformation.None,
-                interactionSource = interactionSource,
-                container = {},
-                contentPadding = PaddingValues(0.dp)
-            )
-        }
-        BasicTextField(
-            value = content,
-            enabled = title.isNotEmpty(),
-            onValueChange = { editContent(it) },
-            textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.primary),
-            modifier = Modifier
-                .padding(0.dp)
-                .fillMaxSize()
-        ) { innerTextField ->
-            TextFieldDefaults.DecorationBox(
-                value = title,
-                innerTextField = innerTextField,
-                placeholder = {
-                    Text(
-                        text = "Content",
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                },
-                enabled = true,
-                singleLine = false,
-                visualTransformation = VisualTransformation.None,
-                interactionSource = interactionSource,
-                container = {},
-                contentPadding = PaddingValues(0.dp)
-            )
         }
     }
 }
@@ -368,6 +296,13 @@ fun BottomToolbar(
     modifier: Modifier = Modifier,
     onOptionSelected: (String) -> Unit
 ) {
+    val toolbarOptions = listOf(
+        BottomToolbarOptions.Checklist to R.drawable.ic_checklist,
+        BottomToolbarOptions.Attachment to R.drawable.ic_attachment,
+        BottomToolbarOptions.Draw to R.drawable.ic_draw,
+        BottomToolbarOptions.Edit to R.drawable.ic_edit
+    )
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -375,34 +310,24 @@ fun BottomToolbar(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = { onOptionSelected(BottomToolbarOptions.Checklist.name) }) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_back_arrow), // Replace with actual resource
-                contentDescription = "Checklist",
-                tint = Color(0xFFFFD700)
-            )
+        toolbarOptions.forEach { (option, iconRes) ->
+            ToolbarIconButton(iconRes = iconRes, contentDescription = option.name) {
+                onOptionSelected(option.name)
+            }
         }
-        IconButton(onClick = { onOptionSelected(BottomToolbarOptions.Attachment.name) }) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_back_arrow), // Replace with actual resource
-                contentDescription = "Attachment",
-                tint = Color(0xFFFFD700)
-            )
-        }
-        IconButton(onClick = { onOptionSelected(BottomToolbarOptions.Draw.name) }) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_back_arrow), // Replace with actual resource
-                contentDescription = "Draw",
-                tint = Color(0xFFFFD700)
-            )
-        }
-        IconButton(onClick = { onOptionSelected(BottomToolbarOptions.Edit.name) }) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_back_arrow), // Replace with actual resource
-                contentDescription = "Edit",
-                tint = Color(0xFFFFD700)
-            )
-        }
+    }
+}
+
+@Composable
+fun ToolbarIconButton(iconRes: Int, contentDescription: String, onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        Icon(
+            painter = painterResource(id = iconRes),
+            contentDescription = contentDescription,
+            tint = MaterialTheme.colorScheme.tertiaryContainer,
+            modifier = Modifier
+                .size(24.dp)
+        )
     }
 }
 

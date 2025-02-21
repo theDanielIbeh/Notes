@@ -1,7 +1,7 @@
 package com.example.notes.screens.signIn
 
 import com.example.notes.R
-import com.example.notes.domain.util.State.ErrorState
+import com.example.notes.screens.util.State.ErrorState
 
 /**
  * Error state in login holding respective

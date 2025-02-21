@@ -1,6 +1,5 @@
 package com.example.notes.domain.model.service.impl
 
-import android.util.Log
 import com.example.notes.domain.model.User
 import com.example.notes.domain.model.service.AccountService
 import com.google.firebase.auth.EmailAuthProvider
@@ -15,7 +14,7 @@ import kotlinx.coroutines.tasks.await
 
 class AccountServiceImpl(
     private val auth: FirebaseAuth
-): AccountService {
+) : AccountService {
 
     override val currentUser: Flow<User?>
         get() = callbackFlow {
@@ -42,7 +41,7 @@ class AccountServiceImpl(
         auth.signInAnonymously().await()
     }
 
-    override suspend fun createUserWithEmailAndPassword(email: String, password: String){
+    override suspend fun createUserWithEmailAndPassword(email: String, password: String) {
         auth.createUserWithEmailAndPassword(email, password).await()
     }
 

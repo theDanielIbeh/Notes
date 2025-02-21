@@ -1,4 +1,4 @@
-package com.example.notes.domain.util
+package com.example.notes.screens.util
 
 import android.content.Context
 import android.util.Log

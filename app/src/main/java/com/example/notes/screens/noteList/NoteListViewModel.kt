@@ -1,14 +1,17 @@
 package com.example.notes.screens.noteList
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.notes.domain.useCase.AttachmentUseCases
 import com.example.notes.domain.useCase.NoteUseCases
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class NoteListViewModel(
-    private val noteUseCases: NoteUseCases
+    private val noteUseCases: NoteUseCases,
+    private val attachmentUseCases: AttachmentUseCases
 ) : ViewModel() {
 
     var state = MutableStateFlow(NoteListState())
@@ -27,7 +30,10 @@ class NoteListViewModel(
 
             is NoteListEvent.RestoreNote -> {
                 viewModelScope.launch {
-                    noteUseCases.insertNote(state.value.recentlyDeletedNote ?: return@launch)
+                    noteUseCases.insertNote(state.value.recentlyDeletedNote?.note ?: return@launch)
+                    state.value.recentlyDeletedNote?.attachments?.forEach {
+                        attachmentUseCases.insertAttachment(it)
+                    }
                     state.value = state.value.copy(
                         recentlyDeletedNote = null
                     )
@@ -42,7 +48,7 @@ class NoteListViewModel(
 
             is NoteListEvent.SelectNote -> {
                 state.value = state.value.copy(
-                    selectedNote = event.note
+                    selectedNoteWithAttachments = event.note
                 )
             }
 
@@ -57,10 +63,11 @@ class NoteListViewModel(
 
     fun getNotes() {
         viewModelScope.launch {
-            noteUseCases.getNotes(state.value.query).collectLatest { notes ->
+            noteUseCases.getNotes(state.value.query).collectLatest { notesWithAttachments ->
                 state.value = state.value.copy(
-                    notes = notes
+                    notesWithAttachments = notesWithAttachments
                 )
+                Log.d("NotesWithAttachments", notesWithAttachments.toString())
             }
         }
     }

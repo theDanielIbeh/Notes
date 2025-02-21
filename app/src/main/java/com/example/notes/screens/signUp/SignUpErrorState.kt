@@ -1,7 +1,7 @@
 package com.example.notes.screens.signUp
 
 import com.example.notes.R
-import com.example.notes.domain.util.State.ErrorState
+import com.example.notes.screens.util.State.ErrorState
 
 
 /**

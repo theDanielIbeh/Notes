@@ -40,12 +40,26 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/{" +
+                        "LICENSE.md," +
+                        "LICENSE.txt," +
+                        "NOTICE.md," +
+                        "NOTICE.txt," +
+                        "LICENSE-notice.md" +
+                        "}"
+            )
+        }
+    }
 }
 
 dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)
@@ -62,6 +76,7 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.firestore)
+    implementation(libs.core.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
@@ -83,6 +98,12 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.gson)
+
+    //Coil
+    implementation(libs.coil.compose)
+
+    testImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk.android)
 
     // Works with test libraries too!
     testImplementation(libs.junit)

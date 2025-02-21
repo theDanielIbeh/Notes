@@ -10,8 +10,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.notes.screens.noteList.NoteListScreen
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import com.example.notes.screens.util.FileUtils.DOCUMENTS
+import com.example.notes.screens.util.FileUtils.PICTURES
+import com.example.notes.screens.util.FileUtils.createFilesDirectory
 import com.example.notes.ui.theme.NotesTheme
 import org.koin.androidx.compose.KoinAndroidContext
 
@@ -28,6 +30,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        /*Create Directories*/
+        createFilesDirectory(application, PICTURES)
+        createFilesDirectory(application, DOCUMENTS)
     }
 }
 
@@ -39,7 +44,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
-@Preview(showBackground = true)
+@PreviewLightDark
 @Composable
 fun NotesPreview() {
     NotesTheme {

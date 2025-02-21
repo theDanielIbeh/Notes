@@ -35,10 +35,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.notes.R
-import com.example.notes.domain.util.AuthenticationButton
-import com.example.notes.domain.util.Helper.isConnected
-import com.example.notes.domain.util.launchCredManBottomSheet
-import com.example.notes.screens.common.Ui.AuthTextField
+import com.example.notes.screens.util.AuthenticationButton
+import com.example.notes.screens.util.Helper.isConnected
+import com.example.notes.screens.util.launchCredManBottomSheet
+import com.example.notes.screens.common.AuthTextField
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

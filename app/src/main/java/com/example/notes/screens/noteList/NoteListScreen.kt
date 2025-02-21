@@ -1,8 +1,5 @@
 package com.example.notes.screens.noteList
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -154,16 +151,16 @@ fun NoteListScreen(
                             .fillMaxSize()
                     ) {
                         items(
-                            key = { it.id ?: 0 },
-                            items = state.notes
-                        ) { note ->
+                            key = { it.note.id ?: 0 },
+                            items = state.notesWithAttachments
+                        ) { noteWithAttachments ->
                             NoteItem(
-                                note,
+                                noteWithAttachments.note,
                                 onClick = {
-                                    onNoteClick(note.id)
+                                    onNoteClick(noteWithAttachments.note.id)
                                 },
                                 onLongClick = {
-                                    viewModel.onEvent(NoteListEvent.SelectNote(note))
+                                    viewModel.onEvent(NoteListEvent.SelectNote(noteWithAttachments))
                                     showMenu = true
                                 }
                             )
@@ -177,7 +174,7 @@ fun NoteListScreen(
                 onDismiss = { showMenu = false },
                 onShareClick = { /* Handle Share Action */ },
                 onDeleteClick = {
-                    state.selectedNote?.id?.let { viewModel.onEvent(NoteListEvent.DeleteNote(it)) }
+                    state.selectedNoteWithAttachments?.note?.id?.let { viewModel.onEvent(NoteListEvent.DeleteNote(it)) }
                     coroutineScope.launch {
                         val result = snackbarHostState.showSnackbar(
                             message = "Note Deleted",

@@ -1,6 +1,8 @@
 [versions]
 agp = "8.7.3"
+coilCompose = "2.5.0"
 datastorePreferences = "1.1.2"
+glide = "4.14.2"
 gson = "2.10.1"
 koinBom = "4.0.0"
 kotlin = "2.1.0"
@@ -12,6 +14,8 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2024.12.01"
+mockk = "1.13.16"
+mockkAndroid = "1.13.16"
 uiTextGoogleFonts = "1.7.6"
 roomCommon = "2.6.1"
 roomCompiler = "2.6.1"
@@ -19,9 +23,14 @@ roomKtx = "2.6.1"
 googleGmsGoogleServices = "4.4.2"
 firebaseBom = "33.8.0"
 googleid = "1.1.1"
+coreKtxVersion = "1.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
@@ -63,6 +72,9 @@ googleid = { group = "com.google.android.libraries.identity.googleid", name = "g
 firebase-database = { module = "com.google.firebase:firebase-database" }
 firebase-storage = { module = "com.google.firebase:firebase-storage" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxVersion" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

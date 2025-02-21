@@ -36,9 +36,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.notes.R
-import com.example.notes.domain.util.AuthenticationButton
-import com.example.notes.domain.util.Helper.isConnected
-import com.example.notes.screens.common.Ui.AuthTextField
+import com.example.notes.screens.util.AuthenticationButton
+import com.example.notes.screens.util.Helper.isConnected
+import com.example.notes.screens.common.AuthTextField
 import com.example.notes.ui.theme.NotesTheme
 import org.koin.androidx.compose.koinViewModel
 

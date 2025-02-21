@@ -1,4 +1,4 @@
-package com.example.notes.domain.util
+package com.example.notes.screens.util
 
 import androidx.annotation.StringRes
 import com.example.notes.R

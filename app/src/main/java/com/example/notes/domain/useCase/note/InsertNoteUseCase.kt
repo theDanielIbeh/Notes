@@ -15,6 +15,10 @@ class InsertNoteUseCase(
 //        if (note.content.isBlank()) {
 //            throw InvalidNoteException("The content of the note can't be empty.")
 //        }
-        repository.insertNote(note)
+        if (note.id == null) {
+            repository.insertNote(note)
+        } else {
+            repository.updateNote(note)
+        }
     }
 }
