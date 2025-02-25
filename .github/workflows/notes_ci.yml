@@ -31,7 +31,7 @@ jobs:
         run: sudo chmod +x gradlew
 
       - name: Run Ktlint
-        run: ./ktlint --relative --reporter=plain --reporter=checkstyle > ktlint-report.xml
+        run: ./gradlew ktlint
 
       - name: Build with Gradle
         run: ./gradlew assembleDebug
