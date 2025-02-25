@@ -11,7 +11,7 @@ import com.example.notes.screens.util.FileUtils.getMimeType
 class InsertAttachmentUseCase(
     private val application: Application,
     private val attachmentRepository: AttachmentRepository,
-    private val attachmentStorageService: AttachmentStorageServiceImpl
+    private val attachmentStorageService: AttachmentStorageServiceImpl,
 ) {
     suspend operator fun invoke(attachment: Attachment) {
         attachmentRepository.insertAttachment(attachment)
@@ -19,9 +19,9 @@ class InsertAttachmentUseCase(
             attachment.uri,
             getFileName(
                 context = application,
-                uri = attachment.uri.toUri()
+                uri = attachment.uri.toUri(),
             ),
-            getMimeType(attachment.uri.toUri())
+            getMimeType(attachment.uri.toUri()),
         )
     }
 }

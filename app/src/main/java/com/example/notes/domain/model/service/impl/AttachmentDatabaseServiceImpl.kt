@@ -8,7 +8,7 @@ import com.google.firebase.database.DatabaseReference
 
 fun attachmentStorageService(
     firebaseDatabaseReference: DatabaseReference,
-    firebaseAuth: FirebaseAuth
+    firebaseAuth: FirebaseAuth,
 ) = DatabaseServiceImpl(
     reference = firebaseDatabaseReference,
     auth = firebaseAuth,
@@ -17,9 +17,13 @@ fun attachmentStorageService(
         try {
             Attachment(
                 id = snapshot.child(AttachmentTableConstants.ID).value?.toString()?.toIntOrNull(),
-                noteId = snapshot.child(AttachmentTableConstants.NOTE_ID).value?.toString()?.toIntOrNull() ?: -1,
+                noteId =
+                    snapshot.child(AttachmentTableConstants.NOTE_ID).value?.toString()
+                        ?.toIntOrNull() ?: -1,
                 uri = snapshot.child(AttachmentTableConstants.URI).value?.toString() ?: "",
-                timeStamp = snapshot.child(AttachmentTableConstants.TIME_STAMP).value?.toString()?.toLongOrNull() ?: System.currentTimeMillis()
+                timeStamp =
+                    snapshot.child(AttachmentTableConstants.TIME_STAMP).value?.toString()
+                        ?.toLongOrNull() ?: System.currentTimeMillis(),
             )
         } catch (e: Exception) {
             Log.e("firebase", "Error parsing attachment", e)
@@ -31,7 +35,7 @@ fun attachmentStorageService(
             AttachmentTableConstants.ID to attachment.id,
             AttachmentTableConstants.NOTE_ID to attachment.noteId,
             AttachmentTableConstants.URI to attachment.uri,
-            AttachmentTableConstants.TIME_STAMP to attachment.timeStamp
+            AttachmentTableConstants.TIME_STAMP to attachment.timeStamp,
         )
-    }
+    },
 )

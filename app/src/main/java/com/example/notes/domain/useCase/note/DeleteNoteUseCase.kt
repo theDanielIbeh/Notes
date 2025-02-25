@@ -7,7 +7,7 @@ import com.example.notes.screens.util.FileUtils.deleteFileFromUri
 
 class DeleteNoteUseCase(
     private val noteRepository: NoteRepository,
-    private val attachmentRepository: AttachmentRepository
+    private val attachmentRepository: AttachmentRepository,
 ) {
     suspend operator fun invoke(noteId: Int) {
         noteRepository.deleteNoteById(noteId)

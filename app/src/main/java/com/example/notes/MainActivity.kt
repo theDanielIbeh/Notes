@@ -30,17 +30,20 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        /*Create Directories*/
+        // Create Directories
         createFilesDirectory(application, PICTURES)
         createFilesDirectory(application, DOCUMENTS)
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun Greeting(
+    name: String,
+    modifier: Modifier = Modifier,
+) {
     Text(
         text = "Hello $name!",
-        modifier = modifier
+        modifier = modifier,
     )
 }
 

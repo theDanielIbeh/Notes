@@ -39,7 +39,7 @@ fun NoteContent(
     editContent: (String) -> Unit,
     showDate: Boolean,
     toggleDate: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val focusRequester = remember { FocusRequester() }
@@ -49,34 +49,36 @@ fun NoteContent(
     }
 
     Column(
-        modifier = modifier
-            .wrapContentSize()
-            .padding(horizontal = 16.dp)
-            .pointerInput(Unit) {
-                detectDragGestures(
-                    onDrag = { change, _ ->
-                        change.consume()
-                    },
-                    onDragStart = {
-                        toggleDate()
-                    },
-                )
-            }
+        modifier =
+            modifier
+                .wrapContentSize()
+                .padding(horizontal = 16.dp)
+                .pointerInput(Unit) {
+                    detectDragGestures(
+                        onDrag = { change, _ ->
+                            change.consume()
+                        },
+                        onDragStart = {
+                            toggleDate()
+                        },
+                    )
+                },
     ) {
         AnimatedVisibility(
             visible = showDate,
             modifier = Modifier.fillMaxWidth(),
             enter = slideInVertically(),
-            exit = slideOutVertically()
+            exit = slideOutVertically(),
         ) {
             Text(
                 text = date,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .fillMaxWidth()
+                modifier =
+                    Modifier
+                        .padding(bottom = 8.dp)
+                        .fillMaxWidth(),
             )
         }
         BasicTextField(
@@ -87,10 +89,11 @@ fun NoteContent(
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             interactionSource = interactionSource,
             singleLine = true,
-            modifier = Modifier
-                .padding(bottom = 8.dp)
-                .fillMaxWidth()
-                .focusRequester(focusRequester),
+            modifier =
+                Modifier
+                    .padding(bottom = 8.dp)
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
         ) { innerTextField ->
             TextFieldDefaults.DecorationBox(
                 value = title,
@@ -98,7 +101,7 @@ fun NoteContent(
                 placeholder = {
                     Text(
                         text = "Title",
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                     )
                 },
                 enabled = true,
@@ -106,7 +109,7 @@ fun NoteContent(
                 visualTransformation = VisualTransformation.None,
                 interactionSource = interactionSource,
                 container = {},
-                contentPadding = PaddingValues(0.dp)
+                contentPadding = PaddingValues(0.dp),
             )
         }
         BasicTextField(
@@ -114,10 +117,11 @@ fun NoteContent(
             enabled = title.isNotEmpty(),
             onValueChange = { editContent(it) },
             textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.primary),
-            modifier = Modifier
-                .padding(0.dp)
-                .fillMaxWidth()
-                .wrapContentHeight()
+            modifier =
+                Modifier
+                    .padding(0.dp)
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
         ) { innerTextField ->
             TextFieldDefaults.DecorationBox(
                 value = title,
@@ -125,7 +129,7 @@ fun NoteContent(
                 placeholder = {
                     Text(
                         text = "Content",
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
                     )
                 },
                 enabled = true,
@@ -133,7 +137,7 @@ fun NoteContent(
                 visualTransformation = VisualTransformation.None,
                 interactionSource = interactionSource,
                 container = {},
-                contentPadding = PaddingValues(0.dp)
+                contentPadding = PaddingValues(0.dp),
             )
         }
     }

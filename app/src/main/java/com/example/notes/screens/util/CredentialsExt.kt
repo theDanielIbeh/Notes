@@ -59,21 +59,21 @@ fun AuthenticationButton(
             coroutineScope.launch { launchCredManButtonUI(context, onRequestResult) }
         },
         shape = RoundedCornerShape(10.dp),
-        modifier = Modifier.padding(start = 12.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
+        modifier = Modifier.padding(start = 12.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
     ) {
         if (isSystemInDarkTheme()) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_google_logo_outlined),
                 modifier = Modifier.padding(horizontal = 16.dp),
                 contentDescription = "Google logo",
-                tint = Color.Unspecified
+                tint = Color.Unspecified,
             )
         } else {
             Icon(
                 painter = painterResource(id = R.drawable.ic_google_logo),
                 modifier = Modifier.padding(horizontal = 16.dp),
                 contentDescription = "Google logo",
-                tint = Color.Unspecified
+                tint = Color.Unspecified,
             )
         }
 
@@ -81,17 +81,18 @@ fun AuthenticationButton(
             text = if (clicked) loadingText else stringResource(buttonText),
             color = MaterialTheme.colorScheme.tertiaryContainer,
             fontSize = 16.sp,
-            modifier = Modifier.padding(6.dp)
+            modifier = Modifier.padding(6.dp),
         )
 
         if (clicked) {
             Spacer(modifier = Modifier.width(16.dp))
             CircularProgressIndicator(
-                modifier = Modifier
-                    .height(16.dp)
-                    .width(16.dp),
+                modifier =
+                    Modifier
+                        .height(16.dp)
+                        .width(16.dp),
                 strokeWidth = 2.dp,
-                color = MaterialTheme.colorScheme.tertiaryContainer
+                color = MaterialTheme.colorScheme.tertiaryContainer,
             )
         }
     }
@@ -99,21 +100,24 @@ fun AuthenticationButton(
 
 private suspend fun launchCredManButtonUI(
     context: Context,
-    onRequestResult: (Credential) -> Unit
+    onRequestResult: (Credential) -> Unit,
 ) {
     try {
-        val signInWithGoogleOption = GetSignInWithGoogleOption
-            .Builder(serverClientId = context.getString(R.string.web_client_id))
-            .build()
+        val signInWithGoogleOption =
+            GetSignInWithGoogleOption
+                .Builder(serverClientId = context.getString(R.string.web_client_id))
+                .build()
 
-        val request = GetCredentialRequest.Builder()
-            .addCredentialOption(signInWithGoogleOption)
-            .build()
+        val request =
+            GetCredentialRequest.Builder()
+                .addCredentialOption(signInWithGoogleOption)
+                .build()
 
-        val result = CredentialManager.create(context).getCredential(
-            request = request,
-            context = context
-        )
+        val result =
+            CredentialManager.create(context).getCredential(
+                request = request,
+                context = context,
+            )
 
         onRequestResult(result.credential)
     } catch (e: NoCredentialException) {
@@ -127,30 +131,33 @@ private suspend fun launchCredManButtonUI(
 suspend fun launchCredManBottomSheet(
     context: Context,
     hasFilter: Boolean = true,
-    onRequestResult: (Credential) -> Unit
+    onRequestResult: (Credential) -> Unit,
 ) {
     try {
-        val googleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(hasFilter)
-            .setServerClientId(context.getString(R.string.web_client_id))
-            .build()
+        val googleIdOption =
+            GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(hasFilter)
+                .setServerClientId(context.getString(R.string.web_client_id))
+                .build()
 
-        val request = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
-            .build()
+        val request =
+            GetCredentialRequest.Builder()
+                .addCredentialOption(googleIdOption)
+                .build()
 
-        val result = CredentialManager.create(context).getCredential(
-            request = request,
-            context = context
-        )
+        val result =
+            CredentialManager.create(context).getCredential(
+                request = request,
+                context = context,
+            )
 
         onRequestResult(result.credential)
     } catch (e: NoCredentialException) {
         Log.d(ERROR_TAG, e.message.orEmpty())
 
-        //If the bottom sheet was launched with filter by authorized accounts, we launch it again
-        //without filter so the user can see all available accounts, not only the ones that have
-        //been previously authorized in this app
+        // If the bottom sheet was launched with filter by authorized accounts, we launch it again
+        // without filter so the user can see all available accounts, not only the ones that have
+        // been previously authorized in this app
         if (hasFilter) {
             launchCredManBottomSheet(context, hasFilter = false, onRequestResult)
         }

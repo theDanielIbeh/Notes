@@ -7,7 +7,7 @@ data class NoteWithAttachments(
     @Embedded val note: Note = Note(),
     @Relation(
         parentColumn = NoteTableConstants.ID,
-        entityColumn = AttachmentTableConstants.NOTE_ID
+        entityColumn = AttachmentTableConstants.NOTE_ID,
     )
-    val attachments: List<Attachment>? = null
+    val attachments: List<Attachment>? = null,
 )

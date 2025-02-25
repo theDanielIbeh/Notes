@@ -19,11 +19,15 @@ object FileUtils {
     const val PICTURES = "Pictures"
     const val DOCUMENTS = "Documents"
 
-    fun openFile(context: Context, uri: Uri) {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, getMimeType(uri))
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
+    fun openFile(
+        context: Context,
+        uri: Uri,
+    ) {
+        val intent =
+            Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, getMimeType(uri))
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
 
         try {
             context.startActivity(intent)
@@ -33,27 +37,34 @@ object FileUtils {
     }
 
     // Get MIME type from URI
-    fun getMimeType(uri: Uri): String? {
+    fun getMimeType(uri: Uri): String {
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-            MimeTypeMap.getFileExtensionFromUrl(uri.toString())
+            MimeTypeMap.getFileExtensionFromUrl(uri.toString()),
         ) ?: "application/octet-stream"
     }
 
     // Helper function to check if a file is an image
-    fun isImageFile(context: Context, uri: Uri): Boolean {
+    fun isImageFile(
+        context: Context,
+        uri: Uri,
+    ): Boolean {
         val contentResolver = context.contentResolver
         val mimeType =
             MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(uri))
-        return mimeType != null && listOf(
-            "jpg",
-            "jpeg",
-            "png",
-            "gif",
-            "webp"
-        ).contains(mimeType.lowercase())
+        return mimeType != null &&
+            listOf(
+                "jpg",
+                "jpeg",
+                "png",
+                "gif",
+                "webp",
+            ).contains(mimeType.lowercase())
     }
 
-    fun createFilesDirectory(context: Context, directoryName: String): String {
+    fun createFilesDirectory(
+        context: Context,
+        directoryName: String,
+    ): String {
         val folder = context.filesDir
         val dir = File(folder, directoryName)
         if (!dir.exists()) {
@@ -62,7 +73,11 @@ object FileUtils {
         return dir.absolutePath
     }
 
-    fun createFileFromUri(context: Context, directoryName: String, uri: Uri): File? {
+    fun createFileFromUri(
+        context: Context,
+        directoryName: String,
+        uri: Uri,
+    ): File? {
         val dir = File(directoryName)
         val fileName = getFileName(context, uri)
         val destinationFile = fileName?.let { File(dir, it) }
@@ -79,7 +94,10 @@ object FileUtils {
         return destinationFile
     }
 
-    fun getFileName(context: Context, uri: Uri): String? {
+    fun getFileName(
+        context: Context,
+        uri: Uri,
+    ): String {
         var name: String? = null
         context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
             if (cursor.moveToFirst()) {
@@ -92,7 +110,10 @@ object FileUtils {
         return name ?: "temp_file"
     }
 
-    fun getUriFromFile(context: Context, file: File): Uri? {
+    fun getUriFromFile(
+        context: Context,
+        file: File,
+    ): Uri? {
         return FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
     }
 
@@ -108,7 +129,7 @@ object FileUtils {
     suspend fun saveFileToStorage(
         fileUrl: String,
         fileName: String,
-        directoryName: String
+        directoryName: String,
     ): String? {
         return withContext(Dispatchers.IO) {
             try {

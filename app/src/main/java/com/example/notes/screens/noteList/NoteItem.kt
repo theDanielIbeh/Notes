@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,26 +23,29 @@ fun NoteItem(
     note: Note,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = { onClick() },
-                    onLongPress = { onLongClick() }
-                )
-            },
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onTap = { onClick() },
+                        onLongPress = { onLongClick() },
+                    )
+                },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary
-        )
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.onPrimary,
+            ),
     ) {
         Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize()
+            modifier =
+                Modifier
+                    .padding(16.dp)
+                    .fillMaxSize(),
         ) {
             Text(
                 text = note.title,
@@ -51,7 +53,7 @@ fun NoteItem(
                 fontSize = 16.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
             Text(
                 text = note.content,
@@ -59,9 +61,10 @@ fun NoteItem(
                 fontSize = 14.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 4.dp)
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(top = 4.dp),
             )
         }
     }

@@ -15,30 +15,31 @@ class DatabaseServiceImpl<T>(
     auth: FirebaseAuth,
     tableName: String,
     private val fromSnapshot: (DataSnapshot) -> T?,
-    private val toMap: (T) -> Map<String, Any?>
+    private val toMap: (T) -> Map<String, Any?>,
 ) : DatabaseService<T> {
-
     private val reference = reference.child(tableName).child(auth.currentUser!!.uid)
 
     override val data: Flow<List<T>>
-        get() = flow {
-            try {
-                Log.d("firebaseRed", "Getting data from reference: $reference")
-                val snapshot = reference.get().await()
-                val result = snapshot.children.mapNotNull { fromSnapshot(it) }
-                emit(result)
-            } catch (e: FirebaseException) {
-                Log.e("firebase", "Error getting data", e)
-                emit(emptyList())
+        get() =
+            flow {
+                try {
+                    Log.d("firebaseRed", "Getting data from reference: $reference")
+                    val snapshot = reference.get().await()
+                    val result = snapshot.children.mapNotNull { fromSnapshot(it) }
+                    emit(result)
+                } catch (e: FirebaseException) {
+                    Log.e("firebase", "Error getting data", e)
+                    emit(emptyList())
+                }
             }
-        }
 
     override suspend fun create(item: T) {
         val itemData = toMap(item)
         reference.get().addOnSuccessListener { snapshot ->
-            val noteSnapshot = snapshot.children.filter {
-                it.child("id").value.toString().toInt() == itemData["id"]
-            }
+            val noteSnapshot =
+                snapshot.children.filter {
+                    it.child("id").value.toString().toInt() == itemData["id"]
+                }
             if (noteSnapshot.isEmpty()) {
                 reference.push().setValue(itemData)
             } else {
@@ -64,9 +65,10 @@ class DatabaseServiceImpl<T>(
     override suspend fun update(item: T) {
         val itemData = toMap(item)
         reference.get().addOnSuccessListener { snapshot ->
-            val itemSnapshot = snapshot.children.find {
-                it.child("id").value.toString() == itemData["id"].toString()
-            }
+            val itemSnapshot =
+                snapshot.children.find {
+                    it.child("id").value.toString() == itemData["id"].toString()
+                }
             itemSnapshot?.key?.let { key ->
                 reference.child(key).setValue(itemData)
             }
@@ -78,9 +80,10 @@ class DatabaseServiceImpl<T>(
     override suspend fun delete(itemId: String) {
         Log.d("firebase", "Deleting item with ID: $itemId")
         reference.get().addOnSuccessListener { snapshot ->
-            val itemSnapshot = snapshot.children.find {
-                it.child("id").value.toString() == itemId
-            }
+            val itemSnapshot =
+                snapshot.children.find {
+                    it.child("id").value.toString() == itemId
+                }
             itemSnapshot?.key?.let { key ->
                 reference.child(key).removeValue()
             }

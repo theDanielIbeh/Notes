@@ -16,7 +16,7 @@ data class Note(
     @ColumnInfo(name = NoteTableConstants.DELETE_FLAG)
     val deleteFlag: Int = 0,
     @ColumnInfo(name = NoteTableConstants.TIME_STAMP)
-    val timeStamp: Long = System.currentTimeMillis()
+    val timeStamp: Long = System.currentTimeMillis(),
 )
 
 class InvalidNoteException(message: String) : Exception(message)

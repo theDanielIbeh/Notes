@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -26,7 +27,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -42,16 +43,40 @@ android {
     }
     packaging {
         resources {
-            excludes += setOf(
-                "META-INF/{" +
+            excludes +=
+                setOf(
+                    "META-INF/{" +
                         "LICENSE.md," +
                         "LICENSE.txt," +
                         "NOTICE.md," +
                         "NOTICE.txt," +
                         "LICENSE-notice.md" +
-                        "}"
-            )
+                        "}",
+                )
         }
+    }
+}
+
+tasks.named("ktlintCheck") {
+    dependsOn("ktlintFormat")
+}
+
+tasks.named("check") {
+    dependsOn("ktlintCheck")
+}
+
+tasks.named("preBuild") {
+    dependsOn("ktlintFormat")
+}
+
+ktlint {
+    android = true
+    verbose = true
+    ignoreFailures = false
+    reporters {
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN)
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE)
+        reporter(org.jlleitschuh.gradle.ktlint.reporter.ReporterType.SARIF)
     }
 }
 
@@ -92,27 +117,26 @@ dependencies {
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.androidx.compose.navigation)
     implementation(libs.koin.androidx.startup)
-    //kotlinx serialization
+    // kotlinx serialization
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.androidx.datastore.preferences)
 
     implementation(libs.gson)
 
-    //Coil
+    // Coil
     implementation(libs.coil.compose)
-
-    testImplementation(libs.mockk)
-    androidTestImplementation(libs.mockk.android)
 
     // Works with test libraries too!
     testImplementation(libs.junit)
     testImplementation(libs.koin.test.junit4)
     testImplementation(libs.koin.android.test)
+    testImplementation(libs.mockk)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.mockk.android)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

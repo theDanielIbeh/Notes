@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,55 +33,61 @@ import com.example.notes.screens.util.FileUtils
 import com.example.notes.screens.util.FileUtils.getFileName
 
 @Composable
-fun AttachmentPreview(context: Context, attachments: List<Uri>, onRemove: (Uri) -> Unit) {
+fun AttachmentPreview(
+    context: Context,
+    attachments: List<Uri>,
+    onRemove: (Uri) -> Unit,
+) {
     LazyColumn(
         modifier = Modifier.padding(8.dp).fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(
             items = attachments,
-            key = { it.toString() }
+            key = { it.toString() },
         ) { uri ->
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.LightGray)
-                    .clickable { FileUtils.openFile(context, uri) },
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.LightGray)
+                        .clickable { FileUtils.openFile(context, uri) },
+                contentAlignment = Alignment.Center,
             ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     if (FileUtils.isImageFile(context, uri)) {
                         AsyncImage(
-                            model = ImageRequest.Builder(context)
-                                .data(uri)
-                                .crossfade(true)
-                                .placeholder(R.drawable.place_holder_image)
-                                .error(R.drawable.error_image)
-                                .build(),
+                            model =
+                                ImageRequest.Builder(context)
+                                    .data(uri)
+                                    .crossfade(true)
+                                    .placeholder(R.drawable.place_holder_image)
+                                    .error(R.drawable.error_image)
+                                    .build(),
                             contentDescription = "Attachment",
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
                         )
                     } else {
                         Icon(
                             painter = painterResource(R.drawable.ic_document),
                             contentDescription = "Document",
                             tint = Color.Black,
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
                         )
                     }
                     Text(
                         text = getFileName(context, uri) ?: "",
-                        modifier = Modifier.padding(8.dp)
+                        modifier = Modifier.padding(8.dp),
                     )
                 }
 
                 IconButton(
                     onClick = { onRemove(uri) },
-                    modifier = Modifier.align(Alignment.TopEnd)
+                    modifier = Modifier.align(Alignment.TopEnd),
                 ) {
                     Icon(Icons.Default.Close, contentDescription = "Remove", tint = Color.Red)
                 }

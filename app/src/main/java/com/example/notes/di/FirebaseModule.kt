@@ -12,16 +12,21 @@ import com.google.firebase.storage.ktx.storage
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-val firebaseModule = module {
-    singleOf(::provideAuth)
-    singleOf(::provideStorage)
-    singleOf(::provideFireDatabase)
-    singleOf(::provideStorageReference)
-    singleOf(::provideDatabaseReference)
-}
+val firebaseModule =
+    module {
+        singleOf(::provideAuth)
+        singleOf(::provideStorage)
+        singleOf(::provideFireDatabase)
+        singleOf(::provideStorageReference)
+        singleOf(::provideDatabaseReference)
+    }
 
 fun provideAuth(): FirebaseAuth = Firebase.auth
+
 fun provideStorage(): FirebaseStorage = Firebase.storage
+
 fun provideFireDatabase(): FirebaseDatabase = Firebase.database
+
 fun provideStorageReference(storage: FirebaseStorage): StorageReference = storage.reference
+
 fun provideDatabaseReference(database: FirebaseDatabase): DatabaseReference = database.reference

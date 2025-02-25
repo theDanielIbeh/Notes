@@ -13,10 +13,10 @@ import androidx.room.PrimaryKey
             entity = Note::class,
             parentColumns = [NoteTableConstants.ID],
             childColumns = [AttachmentTableConstants.NOTE_ID],
-            onDelete = ForeignKey.CASCADE // Deletes attachments when a note is deleted
-        )
+            onDelete = ForeignKey.CASCADE,
+        ),
     ],
-    indices = [Index(value = [AttachmentTableConstants.NOTE_ID])] // Improves query performance
+    indices = [Index(value = [AttachmentTableConstants.NOTE_ID])],
 )
 data class Attachment(
     @PrimaryKey(autoGenerate = true)
@@ -27,7 +27,7 @@ data class Attachment(
     @ColumnInfo(name = AttachmentTableConstants.URI)
     val uri: String,
     @ColumnInfo(name = AttachmentTableConstants.TIME_STAMP)
-    val timeStamp: Long = System.currentTimeMillis()
+    val timeStamp: Long = System.currentTimeMillis(),
 )
 
 object AttachmentTableConstants {

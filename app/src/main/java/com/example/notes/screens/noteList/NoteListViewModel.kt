@@ -11,9 +11,8 @@ import kotlinx.coroutines.launch
 
 class NoteListViewModel(
     private val noteUseCases: NoteUseCases,
-    private val attachmentUseCases: AttachmentUseCases
+    private val attachmentUseCases: AttachmentUseCases,
 ) : ViewModel() {
-
     var state = MutableStateFlow(NoteListState())
         private set
 
@@ -21,9 +20,10 @@ class NoteListViewModel(
         when (event) {
             is NoteListEvent.DeleteNote -> {
                 viewModelScope.launch {
-                    state.value = state.value.copy(
-                        recentlyDeletedNote = noteUseCases.getNote(event.noteId)
-                    )
+                    state.value =
+                        state.value.copy(
+                            recentlyDeletedNote = noteUseCases.getNote(event.noteId),
+                        )
                     noteUseCases.deleteNote(event.noteId)
                 }
             }
@@ -34,28 +34,32 @@ class NoteListViewModel(
                     state.value.recentlyDeletedNote?.attachments?.forEach {
                         attachmentUseCases.insertAttachment(it)
                     }
-                    state.value = state.value.copy(
-                        recentlyDeletedNote = null
-                    )
+                    state.value =
+                        state.value.copy(
+                            recentlyDeletedNote = null,
+                        )
                 }
             }
 
             NoteListEvent.ToggleSearchBar -> {
-                state.value = state.value.copy(
-                    isSearchBarVisible = !state.value.isSearchBarVisible
-                )
+                state.value =
+                    state.value.copy(
+                        isSearchBarVisible = !state.value.isSearchBarVisible,
+                    )
             }
 
             is NoteListEvent.SelectNote -> {
-                state.value = state.value.copy(
-                    selectedNoteWithAttachments = event.note
-                )
+                state.value =
+                    state.value.copy(
+                        selectedNoteWithAttachments = event.note,
+                    )
             }
 
             is NoteListEvent.SearchNote -> {
-                state.value = state.value.copy(
-                    query = event.query
-                )
+                state.value =
+                    state.value.copy(
+                        query = event.query,
+                    )
                 getNotes()
             }
         }
@@ -64,9 +68,10 @@ class NoteListViewModel(
     fun getNotes() {
         viewModelScope.launch {
             noteUseCases.getNotes(state.value.query).collectLatest { notesWithAttachments ->
-                state.value = state.value.copy(
-                    notesWithAttachments = notesWithAttachments
-                )
+                state.value =
+                    state.value.copy(
+                        notesWithAttachments = notesWithAttachments,
+                    )
                 Log.d("NotesWithAttachments", notesWithAttachments.toString())
             }
         }

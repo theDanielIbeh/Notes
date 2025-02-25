@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.flow
 
 class AttachmentRepositoryImpl(
     private val attachmentDao: AttachmentDao,
-    private val attachmentDatabaseService: DatabaseService<Attachment>
+    private val attachmentDatabaseService: DatabaseService<Attachment>,
 ) : AttachmentRepository {
     override suspend fun insertAttachment(attachment: Attachment) {
         attachmentDao.insertAttachment(attachment)
@@ -55,7 +55,10 @@ class AttachmentRepositoryImpl(
         }
     }
 
-    override suspend fun getAttachmentByNoteIdAndUri(noteId: Int, uri: String): Attachment? {
+    override suspend fun getAttachmentByNoteIdAndUri(
+        noteId: Int,
+        uri: String,
+    ): Attachment? {
         return attachmentDao.getAttachmentByNoteIdAndUri(noteId, uri)
     }
 

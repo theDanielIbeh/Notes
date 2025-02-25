@@ -9,5 +9,5 @@ data class NoteListState(
     val isSearchBarVisible: Boolean = false,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val query: String = ""
+    val query: String = "",
 )

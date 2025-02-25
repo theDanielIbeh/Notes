@@ -1,4 +1,4 @@
-package com.example.notes.workers
+package com.example.notes.data.workers
 
 import android.content.Context
 import android.util.Log
@@ -16,7 +16,7 @@ import kotlinx.coroutines.tasks.await
 
 class FirebaseStorageUploadWorker(
     appContext: Context,
-    params: WorkerParameters
+    params: WorkerParameters,
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
         val fileUri = inputData.getString(FILE_URI)?.toUri() ?: return Result.failure()
@@ -25,10 +25,11 @@ class FirebaseStorageUploadWorker(
         val tableName = inputData.getString(TABLE_NAME) ?: return Result.failure()
         return try {
             val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return Result.failure()
-            val reference = FirebaseStorage.getInstance().reference
-                .child(tableName)
-                .child(userId)
-                .child(fileName)
+            val reference =
+                FirebaseStorage.getInstance().reference
+                    .child(tableName)
+                    .child(userId)
+                    .child(fileName)
 
             val metadata = storageMetadata { contentType = mimeType }
             reference.putFile(fileUri, metadata).await()

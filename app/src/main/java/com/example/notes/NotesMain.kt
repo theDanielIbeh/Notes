@@ -15,31 +15,29 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.notes.screens.util.Constants.NOTE_DEFAULT_ID
-import com.example.notes.screens.util.Constants.NOTE_ID
 import com.example.notes.screens.note.NoteScreen
 import com.example.notes.screens.noteList.NoteListScreen
 import com.example.notes.screens.signIn.SignInScreen
 import com.example.notes.screens.signUp.SignUpScreen
+import com.example.notes.screens.util.Constants.NOTE_DEFAULT_ID
+import com.example.notes.screens.util.Constants.NOTE_ID
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.Serializable
 
 @Composable
-fun NotesMain(
-    modifier: Modifier = Modifier,
-) {
+fun NotesMain(modifier: Modifier = Modifier) {
     Surface(color = MaterialTheme.colorScheme.background, modifier = modifier) {
         val snackbarHostState = remember { SnackbarHostState() }
         val appState = rememberAppState(snackbarHostState)
 
         Scaffold(
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         ) { innerPaddingModifier ->
             NavHost(
                 navController = appState.navController,
                 startDestination = if (FirebaseAuth.getInstance().currentUser == null) Route.Login else Route.NotesList,
-                modifier = Modifier.padding(innerPaddingModifier)
+                modifier = Modifier.padding(innerPaddingModifier),
             ) {
                 notesGraph(appState)
             }
@@ -52,7 +50,7 @@ fun rememberAppState(
     snackbarHostState: SnackbarHostState,
     navController: NavHostController = rememberNavController(),
     snackbarManager: SnackBarManager = SnackBarManager,
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): NotesAppState {
     return remember(snackbarHostState, navController, snackbarManager, coroutineScope) {
         NotesAppState(snackbarHostState, navController, snackbarManager, coroutineScope)
@@ -88,7 +86,7 @@ fun NavGraphBuilder.notesGraph(appState: NotesAppState) {
             onNavigateToSignIn = { appState.clearAndNavigate(Route.Login) },
             openAndPopUp = {
                 appState.clearAndNavigate(Route.NotesList)
-            }
+            },
         )
     }
 }

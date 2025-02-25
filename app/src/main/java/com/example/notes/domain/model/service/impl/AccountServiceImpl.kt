@@ -13,18 +13,18 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
 class AccountServiceImpl(
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
 ) : AccountService {
-
     override val currentUser: Flow<User?>
-        get() = callbackFlow {
-            val listener =
-                FirebaseAuth.AuthStateListener { auth ->
-                    this.trySend(auth.currentUser.toNotesUser())
-                }
-            auth.addAuthStateListener(listener)
-            awaitClose { auth.removeAuthStateListener(listener) }
-        }
+        get() =
+            callbackFlow {
+                val listener =
+                    FirebaseAuth.AuthStateListener { auth ->
+                        this.trySend(auth.currentUser.toNotesUser())
+                    }
+                auth.addAuthStateListener(listener)
+                awaitClose { auth.removeAuthStateListener(listener) }
+            }
 
     override val currentUserId: String
         get() = auth.currentUser?.uid.orEmpty()
@@ -41,14 +41,18 @@ class AccountServiceImpl(
         auth.signInAnonymously().await()
     }
 
-    override suspend fun createUserWithEmailAndPassword(email: String, password: String) {
+    override suspend fun createUserWithEmailAndPassword(
+        email: String,
+        password: String,
+    ) {
         auth.createUserWithEmailAndPassword(email, password).await()
     }
 
     override suspend fun updateDisplayName(newDisplayName: String) {
-        val profileUpdates = userProfileChangeRequest {
-            displayName = newDisplayName
-        }
+        val profileUpdates =
+            userProfileChangeRequest {
+                displayName = newDisplayName
+            }
 
         auth.currentUser!!.updateProfile(profileUpdates).await()
     }
@@ -58,7 +62,10 @@ class AccountServiceImpl(
         auth.currentUser!!.linkWithCredential(firebaseCredential).await()
     }
 
-    override suspend fun linkAccountWithEmail(email: String, password: String) {
+    override suspend fun linkAccountWithEmail(
+        email: String,
+        password: String,
+    ) {
         createAnonymousAccount()
         val credential = EmailAuthProvider.getCredential(email, password)
         auth.currentUser!!.linkWithCredential(credential).await()
@@ -74,7 +81,10 @@ class AccountServiceImpl(
         auth.signInWithCredential(firebaseCredential).await()
     }
 
-    override suspend fun signInWithEmail(email: String, password: String) {
+    override suspend fun signInWithEmail(
+        email: String,
+        password: String,
+    ) {
         auth.signInWithEmailAndPassword(email, password).await()
     }
 
@@ -90,12 +100,16 @@ class AccountServiceImpl(
     }
 
     private fun FirebaseUser?.toNotesUser(): User {
-        return if (this == null) User() else User(
-            id = this.uid,
-            email = this.email ?: "",
-            provider = this.providerId,
-            displayName = this.displayName ?: "",
-            isAnonymous = this.isAnonymous
-        )
+        return if (this == null) {
+            User()
+        } else {
+            User(
+                id = this.uid,
+                email = this.email ?: "",
+                provider = this.providerId,
+                displayName = this.displayName ?: "",
+                isAnonymous = this.isAnonymous,
+            )
+        }
     }
 }

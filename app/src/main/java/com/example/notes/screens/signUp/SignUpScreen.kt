@@ -36,9 +36,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.notes.R
+import com.example.notes.screens.common.AuthTextField
 import com.example.notes.screens.util.AuthenticationButton
 import com.example.notes.screens.util.Helper.isConnected
-import com.example.notes.screens.common.AuthTextField
 import com.example.notes.ui.theme.NotesTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -48,7 +48,7 @@ fun SignUpScreen(
     openAndPopUp: () -> Unit,
     application: Application = LocalContext.current.applicationContext as Application,
     modifier: Modifier = Modifier,
-    signUpViewModel: SignUpViewModel = koinViewModel()
+    signUpViewModel: SignUpViewModel = koinViewModel(),
 ) {
     val registerState by signUpViewModel.signUpState.collectAsState()
 
@@ -56,21 +56,22 @@ fun SignUpScreen(
         Toast.makeText(
             application,
             registerState.errorState.termsErrorState.errorMessageStringResource,
-            Toast.LENGTH_LONG
+            Toast.LENGTH_LONG,
         ).show()
     }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = "Sign Up",
             style = MaterialTheme.typography.displayMedium,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -81,8 +82,7 @@ fun SignUpScreen(
             modifier = Modifier.padding(8.dp),
             label = { Text(stringResource(R.string.first_name)) },
             isError = registerState.errorState.emailErrorState.hasError,
-            errorText = stringResource(registerState.errorState.emailErrorState.errorMessageStringResource)
-
+            errorText = stringResource(registerState.errorState.emailErrorState.errorMessageStringResource),
         )
         AuthTextField(
             value = registerState.lastName,
@@ -90,8 +90,7 @@ fun SignUpScreen(
             modifier = Modifier.padding(8.dp),
             label = { Text(stringResource(R.string.last_name)) },
             isError = registerState.errorState.emailErrorState.hasError,
-            errorText = stringResource(registerState.errorState.emailErrorState.errorMessageStringResource)
-
+            errorText = stringResource(registerState.errorState.emailErrorState.errorMessageStringResource),
         )
 
         AuthTextField(
@@ -103,8 +102,7 @@ fun SignUpScreen(
             action = ImeAction.Next,
             onKeyboardDone = {},
             isError = registerState.errorState.emailErrorState.hasError,
-            errorText = stringResource(registerState.errorState.emailErrorState.errorMessageStringResource)
-
+            errorText = stringResource(registerState.errorState.emailErrorState.errorMessageStringResource),
         )
 
         AuthTextField(
@@ -116,7 +114,7 @@ fun SignUpScreen(
             action = ImeAction.Next,
             onKeyboardDone = { },
             isError = registerState.errorState.passwordErrorState.hasError,
-            errorText = stringResource(registerState.errorState.passwordErrorState.errorMessageStringResource)
+            errorText = stringResource(registerState.errorState.passwordErrorState.errorMessageStringResource),
         )
 
         AuthTextField(
@@ -128,13 +126,13 @@ fun SignUpScreen(
             action = ImeAction.Next,
             onKeyboardDone = { signUpViewModel.onEvent(SignUpEvent.SignUp(openAndPopUp)) },
             isError = registerState.errorState.cPasswordErrorState.hasError,
-            errorText = stringResource(registerState.errorState.cPasswordErrorState.errorMessageStringResource)
+            errorText = stringResource(registerState.errorState.cPasswordErrorState.errorMessageStringResource),
         )
 
         Row(
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Checkbox(
                 checked = registerState.termsAgreed,
@@ -142,7 +140,7 @@ fun SignUpScreen(
             )
             Text(
                 text = "I Read and Accept the terms and condition",
-                fontSize = 12.sp
+                fontSize = 12.sp,
             )
         }
 
@@ -150,22 +148,25 @@ fun SignUpScreen(
 
         Button(
             onClick = {
-                if (isConnected(application))
+                if (isConnected(application)) {
                     signUpViewModel.onEvent(SignUpEvent.SignUp(openAndPopUp))
-                else
+                } else {
                     Toast.makeText(application, "No internet connection", Toast.LENGTH_LONG)
                         .show()
+                }
             },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
             shape = RoundedCornerShape(15.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .height(48.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .height(48.dp),
         ) {
             Text(
-                text = "Register", color = MaterialTheme.colorScheme.onTertiaryContainer,
-                fontWeight = FontWeight.Bold
+                text = "Register",
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                fontWeight = FontWeight.Bold,
             )
         }
 
@@ -174,21 +175,22 @@ fun SignUpScreen(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = "Already have an account? ",
                 color = MaterialTheme.colorScheme.primary,
-                fontSize = 14.sp
+                fontSize = 14.sp,
             )
             Text(
                 text = AnnotatedString("Login"),
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = MaterialTheme.colorScheme.tertiary,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.clickable { onNavigateToSignIn() }
+                style =
+                    MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                    ),
+                modifier = Modifier.clickable { onNavigateToSignIn() },
             )
         }
 
@@ -204,7 +206,7 @@ fun PreviewRegisterScreen() {
     NotesTheme {
         SignUpScreen(
             onNavigateToSignIn = {},
-            openAndPopUp = {}
+            openAndPopUp = {},
         )
     }
 }

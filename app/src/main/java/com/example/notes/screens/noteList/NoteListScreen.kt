@@ -70,7 +70,7 @@ import org.koin.androidx.compose.koinViewModel
 fun NoteListScreen(
     viewModel: NoteListViewModel = koinViewModel<NoteListViewModel>(),
     onNoteClick: (Int?) -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
     val coroutineScope = rememberCoroutineScope()
@@ -87,31 +87,33 @@ fun NoteListScreen(
                 onClick = { onNoteClick(null) },
                 modifier = modifier.padding(16.dp),
                 containerColor = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
             ) {
                 Icon(
                     Icons.Filled.Add,
                     "Add",
                     tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(36.dp),
                 )
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
     ) { innerPadding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background) // Light mode background
-                .padding(innerPadding)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background) // Light mode background
+                    .padding(innerPadding),
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier =
+                    Modifier
+                        .fillMaxSize()
 //                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.Top
+                        .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.Top,
             ) {
                 // Header Section
                 HeaderSection()
@@ -127,32 +129,35 @@ fun NoteListScreen(
 //                ) {
                 SearchBar(
                     value = state.query,
-                    onValueChange = { viewModel.onEvent(NoteListEvent.SearchNote(it)) }
+                    onValueChange = { viewModel.onEvent(NoteListEvent.SearchNote(it)) },
                 )
 //                }
 
                 Spacer(modifier = Modifier.height(24.dp))
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .pointerInput(Unit) {
-                        detectDragGestures(
-                            onDrag = { change, _ ->
-                                change.consume()
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .pointerInput(Unit) {
+                                detectDragGestures(
+                                    onDrag = { change, _ ->
+                                        change.consume()
+                                    },
+                                    onDragStart = {
+                                        showSearchBar = !showSearchBar
+                                    },
+                                )
                             },
-                            onDragStart = {
-                                showSearchBar = !showSearchBar
-                            },
-                        )
-                    }
                 ) {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier
-                            .fillMaxSize()
+                        modifier =
+                            Modifier
+                                .fillMaxSize(),
                     ) {
                         items(
                             key = { it.note.id ?: 0 },
-                            items = state.notesWithAttachments
+                            items = state.notesWithAttachments,
                         ) { noteWithAttachments ->
                             NoteItem(
                                 noteWithAttachments.note,
@@ -162,7 +167,7 @@ fun NoteListScreen(
                                 onLongClick = {
                                     viewModel.onEvent(NoteListEvent.SelectNote(noteWithAttachments))
                                     showMenu = true
-                                }
+                                },
                             )
                         }
                     }
@@ -176,17 +181,18 @@ fun NoteListScreen(
                 onDeleteClick = {
                     state.selectedNoteWithAttachments?.note?.id?.let { viewModel.onEvent(NoteListEvent.DeleteNote(it)) }
                     coroutineScope.launch {
-                        val result = snackbarHostState.showSnackbar(
-                            message = "Note Deleted",
-                            actionLabel = "Undo",
-                            duration = SnackbarDuration.Short
-                        )
+                        val result =
+                            snackbarHostState.showSnackbar(
+                                message = "Note Deleted",
+                                actionLabel = "Undo",
+                                duration = SnackbarDuration.Short,
+                            )
                         if (result == SnackbarResult.ActionPerformed) {
                             viewModel.onEvent(NoteListEvent.RestoreNote)
                         }
                     }
                     showMenu = false
-                }
+                },
             )
         }
 
@@ -197,29 +203,28 @@ fun NoteListScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(
-    modifier: Modifier = Modifier
-) {
+fun AppBar(modifier: Modifier = Modifier) {
     TopAppBar(
         navigationIcon = {
             Row(
                 horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_back_arrow),
                     contentDescription = null,
-                    modifier = Modifier
-                        .height(36.dp)
-                        .width(24.dp)
-                        .fillMaxWidth()
-                        .windowInsetsPadding(WindowInsets(0.dp)),
-                    tint = MaterialTheme.colorScheme.tertiaryContainer
+                    modifier =
+                        Modifier
+                            .height(36.dp)
+                            .width(24.dp)
+                            .fillMaxWidth()
+                            .windowInsetsPadding(WindowInsets(0.dp)),
+                    tint = MaterialTheme.colorScheme.tertiaryContainer,
                 )
                 Text(
                     text = "Folders",
                     color = MaterialTheme.colorScheme.tertiaryContainer,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
                 )
             }
         },
@@ -227,15 +232,16 @@ fun AppBar(
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(end = 16.dp)
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(end = 16.dp),
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.wrapContentWidth()
+                    modifier = Modifier.wrapContentWidth(),
                 ) {
 //                    Icon(
 //                        painter = painterResource(R.drawable.search),
@@ -247,23 +253,24 @@ fun AppBar(
                         painter = painterResource(R.drawable.ic_profile),
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.tertiaryContainer
+                        tint = MaterialTheme.colorScheme.tertiaryContainer,
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
                     Icon(
                         painter = painterResource(R.drawable.ic_ellipsis),
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.tertiaryContainer
+                        tint = MaterialTheme.colorScheme.tertiaryContainer,
                     )
                 }
             }
         },
         windowInsets = WindowInsets(0.dp),
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
-        ),
-        modifier = modifier.fillMaxWidth()
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.background,
+            ),
+        modifier = modifier.fillMaxWidth(),
     )
 }
 
@@ -271,35 +278,41 @@ fun AppBar(
 fun HeaderSection(modifier: Modifier = Modifier) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = "All iCloud",
             color = MaterialTheme.colorScheme.primary,
             fontSize = 22.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBar(value: String, onValueChange: (String) -> Unit, modifier: Modifier = Modifier) {
+fun SearchBar(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val interactionSource = remember { MutableInteractionSource() }
     BasicTextField(
         value = value,
         onValueChange = { onValueChange(it) },
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                shape = RoundedCornerShape(50.dp),
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .background(
+                    shape = RoundedCornerShape(50.dp),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                ),
+        textStyle =
+            TextStyle(
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                fontSize = 16.sp,
             ),
-        textStyle = TextStyle(
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
-            fontSize = 16.sp
-        ),
-        interactionSource = interactionSource
+        interactionSource = interactionSource,
     ) { innerTextField ->
         TextFieldDefaults.DecorationBox(
             value = value,
@@ -308,7 +321,7 @@ fun SearchBar(value: String, onValueChange: (String) -> Unit, modifier: Modifier
                 Text(
                     text = "Search",
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
                 )
             },
             enabled = true,
@@ -320,12 +333,12 @@ fun SearchBar(value: String, onValueChange: (String) -> Unit, modifier: Modifier
                     painter = painterResource(R.drawable.search),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
             },
             trailingIcon = {},
             container = {},
-            contentPadding = PaddingValues(0.dp)
+            contentPadding = PaddingValues(0.dp),
         )
     }
 }
@@ -335,32 +348,35 @@ fun SearchBar(value: String, onValueChange: (String) -> Unit, modifier: Modifier
 fun NoteOptionsMenu(
     onDismiss: () -> Unit,
     onShareClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
-        sheetState = sheetState
+        sheetState = sheetState,
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                stringResource(R.string.share), modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onShareClick() }
-                    .padding(16.dp))
+                stringResource(R.string.share),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { onShareClick() }
+                        .padding(16.dp),
+            )
             HorizontalDivider()
             Text(
                 stringResource(R.string.delete),
                 color = Color.Red,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onDeleteClick() }
-                    .padding(16.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { onDeleteClick() }
+                        .padding(16.dp),
             )
         }
     }
 }
-
 
 @Preview
 @Composable

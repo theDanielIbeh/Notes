@@ -46,7 +46,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import com.example.notes.R
 import com.example.notes.screens.util.FileUtils.DOCUMENTS
 import com.example.notes.screens.util.FileUtils.PICTURES
@@ -63,38 +62,41 @@ fun NoteScreen(
     viewModel: NoteViewModel = koinViewModel<NoteViewModel>(),
     application: Application = LocalContext.current.applicationContext as Application,
     popUpScreen: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
     val attachments by viewModel.attachmentUris.collectAsState()
 
-    val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            if (isImageFile(context = application, uri = it)) {
-                val createdFile = createFileFromUri(
-                    context = application,
-                    directoryName = createFilesDirectory(application, PICTURES),
-                    uri = it
-                )
-                createdFile?.let { file ->
-                    val attachmentUri = getUriFromFile(application, file)
-                    attachmentUri?.let { viewModel.onEvent(NoteEvent.AddAttachment(attachmentUri)) }
-                }
-            } else {
-                val createdFile = createFileFromUri(
-                    context = application,
-                    directoryName = createFilesDirectory(application, DOCUMENTS),
-                    uri = it
-                )
-                createdFile?.let { file ->
-                    val attachmentUri = getUriFromFile(application, file)
-                    attachmentUri?.let { viewModel.onEvent(NoteEvent.AddAttachment(attachmentUri)) }
+    val filePickerLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent(),
+        ) { uri: Uri? ->
+            uri?.let {
+                if (isImageFile(context = application, uri = it)) {
+                    val createdFile =
+                        createFileFromUri(
+                            context = application,
+                            directoryName = createFilesDirectory(application, PICTURES),
+                            uri = it,
+                        )
+                    createdFile?.let { file ->
+                        val attachmentUri = getUriFromFile(application, file)
+                        attachmentUri?.let { viewModel.onEvent(NoteEvent.AddAttachment(attachmentUri)) }
+                    }
+                } else {
+                    val createdFile =
+                        createFileFromUri(
+                            context = application,
+                            directoryName = createFilesDirectory(application, DOCUMENTS),
+                            uri = it,
+                        )
+                    createdFile?.let { file ->
+                        val attachmentUri = getUriFromFile(application, file)
+                        attachmentUri?.let { viewModel.onEvent(NoteEvent.AddAttachment(attachmentUri)) }
+                    }
                 }
             }
         }
-    }
 
     var showDate by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -108,27 +110,27 @@ fun NoteScreen(
                     viewModel.onEvent(
                         NoteEvent.SaveNote(
                             noteWithAttachments = state.noteWithAttachments,
-                            popUpScreen = popUpScreen
-                        )
+                            popUpScreen = popUpScreen,
+                        ),
                     )
                 },
                 onDoneClicked = {
                     viewModel.onEvent(
                         NoteEvent.SaveNote(
                             noteWithAttachments = state.noteWithAttachments,
-                        )
+                        ),
                     )
                 },
                 onDeleteClicked = {
                     state.noteWithAttachments.note.id?.let {
                         viewModel.onEvent(
                             NoteEvent.DeleteNote(
-                                noteId = it
-                            )
+                                noteId = it,
+                            ),
                         )
                     }
                     popUpScreen()
-                }
+                },
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -136,22 +138,22 @@ fun NoteScreen(
             BottomToolbar { selectedOption ->
                 // Handle option selection
                 when (selectedOption) {
-                    BottomToolbarOptions.Checklist.name -> { /* Navigate to checklist screen */
+                    BottomToolbarOptions.Checklist.name -> { // Navigate to checklist screen
                     }
 
-                    BottomToolbarOptions.Attachment.name -> { /* Open attachment picker */
+                    BottomToolbarOptions.Attachment.name -> { // Open attachment picker
                         filePickerLauncher.launch("*/*")
                     }
 
-                    BottomToolbarOptions.Draw.name -> { /* Open drawing canvas */
+                    BottomToolbarOptions.Draw.name -> { // Open drawing canvas
                     }
 
-                    BottomToolbarOptions.Edit.name -> { /* Enable editing mode */
+                    BottomToolbarOptions.Edit.name -> { // Enable editing mode
                     }
                 }
             }
         },
-        modifier = modifier
+        modifier = modifier,
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
             NoteContent(
@@ -161,14 +163,15 @@ fun NoteScreen(
                 editTitle = { viewModel.onEvent(NoteEvent.EditTitle(it)) },
                 editContent = { viewModel.onEvent(NoteEvent.EditContent(it)) },
                 showDate = showDate,
-                toggleDate = { showDate = !showDate }
+                toggleDate = { showDate = !showDate },
             )
             Log.d("Attachments", attachments.toString())
             if (attachments.isNotEmpty()) {
                 AttachmentPreview(
                     application,
                     attachments.toList(),
-                    onRemove = { viewModel.onEvent(NoteEvent.DeleteAttachment(it)) })
+                    onRemove = { viewModel.onEvent(NoteEvent.DeleteAttachment(it)) },
+                )
             }
         }
     }
@@ -180,25 +183,27 @@ fun AppBar(
     onBackPressed: () -> Unit,
     onDoneClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     TopAppBar(
         navigationIcon = {
             Row(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .clickable { onBackPressed() }
+                modifier =
+                    Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .clickable { onBackPressed() },
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_back_arrow),
                     contentDescription = null,
-                    modifier = Modifier
-                        .height(36.dp)
-                        .width(24.dp)
-                        .fillMaxWidth(),
-                    tint = MaterialTheme.colorScheme.tertiaryContainer
+                    modifier =
+                        Modifier
+                            .height(36.dp)
+                            .width(24.dp)
+                            .fillMaxWidth(),
+                    tint = MaterialTheme.colorScheme.tertiaryContainer,
                 )
 
                 Text(
@@ -211,16 +216,17 @@ fun AppBar(
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background),
             ) {
                 Spacer(modifier = Modifier.weight(1F))
 
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.wrapContentWidth()
+                    modifier = Modifier.wrapContentWidth(),
                 ) {
 //                    Icon(
 //                        painter = ,
@@ -236,8 +242,7 @@ fun AppBar(
 //                    )
                     DropdownMenu(
                         onShareClick = { /* Handle Share Action */ },
-                        onDeleteClick = onDeleteClicked
-
+                        onDeleteClick = onDeleteClicked,
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
@@ -250,42 +255,45 @@ fun AppBar(
             }
         },
         windowInsets = WindowInsets(0.dp),
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
-        ),
-        modifier = modifier.fillMaxWidth()
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.background,
+            ),
+        modifier = modifier.fillMaxWidth(),
     )
 }
 
 @Composable
 fun DropdownMenu(
     onShareClick: () -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     Box(
-        modifier = Modifier
-            .padding(8.dp)
+        modifier =
+            Modifier
+                .padding(8.dp),
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_ellipsis),
             contentDescription = null,
-            modifier = Modifier
-                .size(24.dp)
-                .clickable { expanded = !expanded },
-            tint = MaterialTheme.colorScheme.tertiaryContainer
+            modifier =
+                Modifier
+                    .size(24.dp)
+                    .clickable { expanded = !expanded },
+            tint = MaterialTheme.colorScheme.tertiaryContainer,
         )
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
         ) {
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.share)) },
-                onClick = { onShareClick() }
+                onClick = { onShareClick() },
             )
             DropdownMenuItem(
                 text = { Text(stringResource(R.string.delete)) },
-                onClick = { onDeleteClick() }
+                onClick = { onDeleteClick() },
             )
         }
     }
@@ -294,21 +302,23 @@ fun DropdownMenu(
 @Composable
 fun BottomToolbar(
     modifier: Modifier = Modifier,
-    onOptionSelected: (String) -> Unit
+    onOptionSelected: (String) -> Unit,
 ) {
-    val toolbarOptions = listOf(
-        BottomToolbarOptions.Checklist to R.drawable.ic_checklist,
-        BottomToolbarOptions.Attachment to R.drawable.ic_attachment,
-        BottomToolbarOptions.Draw to R.drawable.ic_draw,
-        BottomToolbarOptions.Edit to R.drawable.ic_edit
-    )
+    val toolbarOptions =
+        listOf(
+            BottomToolbarOptions.Checklist to R.drawable.ic_checklist,
+            BottomToolbarOptions.Attachment to R.drawable.ic_attachment,
+            BottomToolbarOptions.Draw to R.drawable.ic_draw,
+            BottomToolbarOptions.Edit to R.drawable.ic_edit,
+        )
 
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         toolbarOptions.forEach { (option, iconRes) ->
             ToolbarIconButton(iconRes = iconRes, contentDescription = option.name) {
@@ -319,14 +329,19 @@ fun BottomToolbar(
 }
 
 @Composable
-fun ToolbarIconButton(iconRes: Int, contentDescription: String, onClick: () -> Unit) {
+fun ToolbarIconButton(
+    iconRes: Int,
+    contentDescription: String,
+    onClick: () -> Unit,
+) {
     IconButton(onClick = onClick) {
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = contentDescription,
             tint = MaterialTheme.colorScheme.tertiaryContainer,
-            modifier = Modifier
-                .size(24.dp)
+            modifier =
+                Modifier
+                    .size(24.dp),
         )
     }
 }
@@ -335,5 +350,5 @@ enum class BottomToolbarOptions {
     Checklist,
     Attachment,
     Draw,
-    Edit
+    Edit,
 }

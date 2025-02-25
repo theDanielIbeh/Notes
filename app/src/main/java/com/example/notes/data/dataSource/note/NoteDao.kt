@@ -13,28 +13,43 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao {
-
     @Transaction
     @Query("SELECT * FROM ${NoteTableConstants.NOTE_TABLE}")
     fun getNotes(): Flow<List<NoteWithAttachments>>
 
     @Transaction
-    @Query("SELECT * FROM ${NoteTableConstants.NOTE_TABLE} WHERE ${NoteTableConstants.ID} = :id")
+    @Query(
+        "SELECT * FROM ${NoteTableConstants.NOTE_TABLE} " +
+            "WHERE ${NoteTableConstants.ID} = :id",
+    )
     suspend fun getNoteById(id: Int): NoteWithAttachments?
 
     @Transaction
-    @Query("SELECT * FROM ${NoteTableConstants.NOTE_TABLE} WHERE ${NoteTableConstants.DELETE_FLAG} = 0 ORDER BY ${NoteTableConstants.TIME_STAMP} DESC")
+    @Query(
+        "SELECT * FROM ${NoteTableConstants.NOTE_TABLE} WHERE ${NoteTableConstants.DELETE_FLAG} = 0 " +
+            "ORDER BY ${NoteTableConstants.TIME_STAMP} DESC",
+    )
     fun getActiveNotes(): Flow<List<NoteWithAttachments>>
 
     @Transaction
-    @Query("SELECT * FROM ${NoteTableConstants.NOTE_TABLE} WHERE ${NoteTableConstants.DELETE_FLAG} = 1 and ${NoteTableConstants.TIME_STAMP} > :timestamp")
+    @Query(
+        "SELECT * FROM ${NoteTableConstants.NOTE_TABLE} " +
+            "WHERE ${NoteTableConstants.DELETE_FLAG} = 1 " +
+            "AND ${NoteTableConstants.TIME_STAMP} > :timestamp",
+    )
     fun getRecentlyDeletedNotes(timestamp: Long): Flow<List<NoteWithAttachments>>
 
     @Transaction
-    @Query("SELECT * FROM ${NoteTableConstants.NOTE_TABLE} WHERE ${NoteTableConstants.TIME_STAMP} = :timeStamp")
+    @Query(
+        "SELECT * FROM ${NoteTableConstants.NOTE_TABLE} " +
+            "WHERE ${NoteTableConstants.TIME_STAMP} = :timeStamp",
+    )
     suspend fun getNoteByTimeStamp(timeStamp: Long): NoteWithAttachments?
 
-    @Query("DELETE FROM ${NoteTableConstants.NOTE_TABLE} WHERE ${NoteTableConstants.ID} = :id")
+    @Query(
+        "DELETE FROM ${NoteTableConstants.NOTE_TABLE} " +
+            "WHERE ${NoteTableConstants.ID} = :id",
+    )
     suspend fun deleteNoteById(id: Int)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

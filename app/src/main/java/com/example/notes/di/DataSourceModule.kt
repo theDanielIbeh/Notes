@@ -9,18 +9,20 @@ import com.example.notes.data.dataSource.note.NoteDao
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-val dataSourceModule = module {
-    singleOf(::provideNoteDao) // Provide Application context
-    singleOf(::provideDatabase)
-    singleOf(::provideAttachmentDao)
-}
+val dataSourceModule =
+    module {
+        singleOf(::provideNoteDao) // Provide Application context
+        singleOf(::provideDatabase)
+        singleOf(::provideAttachmentDao)
+    }
 
-fun provideDatabase(application: Application) : NoteDatabase =
+fun provideDatabase(application: Application): NoteDatabase =
     Room.databaseBuilder(
         application,
         NoteDatabase::class.java,
-        DATABASE_NAME
+        DATABASE_NAME,
     ).build()
 
 fun provideNoteDao(database: NoteDatabase): NoteDao = database.noteDao
+
 fun provideAttachmentDao(database: NoteDatabase): AttachmentDao = database.attachmentDao

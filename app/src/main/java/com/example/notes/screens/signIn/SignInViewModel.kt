@@ -18,7 +18,6 @@ class SignInViewModel(
     private val authUseCases: AuthUseCases,
     private val application: Application,
 ) : ViewModel() {
-
     var state = MutableStateFlow(SignInState())
         private set
 
@@ -67,7 +66,10 @@ class SignInViewModel(
         }
     }
 
-    private fun onSignInWithGoogle(credential: Credential, openAndPopUp: () -> Unit) {
+    private fun onSignInWithGoogle(
+        credential: Credential,
+        openAndPopUp: () -> Unit,
+    ) {
         viewModelScope.launch {
             if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                 val googleIdTokenCredential =

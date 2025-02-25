@@ -22,16 +22,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import java.io.File
 
-
 class NoteRepositoryImpl(
     private val application: Application,
     private val noteDao: NoteDao,
     private val attachmentDao: AttachmentDao,
     private val noteDatabaseService: DatabaseService<Note>,
     private val attachmentDatabaseService: DatabaseService<Attachment>,
-    private val attachmentStorageService: AttachmentStorageServiceImpl
-    ) : NoteRepository {
-
+    private val attachmentStorageService: AttachmentStorageServiceImpl,
+) : NoteRepository {
     override fun getNotes(): Flow<List<NoteWithAttachments>> {
         return noteDao.getNotes()
     }
@@ -64,15 +62,16 @@ class NoteRepositoryImpl(
                 if (attachment.noteId in localNotes.map { it.note.id }) {
                     attachmentDao.insertAttachment(attachment = attachment)
                     val file = File(attachment.uri)
-                    val directoryName = if (isImageFile(context = application, uri = attachment.uri.toUri())) {
-                        createFilesDirectory(application, PICTURES)
-                    } else {
-                        createFilesDirectory(application, DOCUMENTS)
-                    }
+                    val directoryName =
+                        if (isImageFile(context = application, uri = attachment.uri.toUri())) {
+                            createFilesDirectory(application, PICTURES)
+                        } else {
+                            createFilesDirectory(application, DOCUMENTS)
+                        }
                     if (!file.exists()) {
                         getFileName(
                             application,
-                            attachment.uri.toUri()
+                            attachment.uri.toUri(),
                         )?.let { attachmentStorageService.downloadFile(it, directoryName) }
                     }
                 }

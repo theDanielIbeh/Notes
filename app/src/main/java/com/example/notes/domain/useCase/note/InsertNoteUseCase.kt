@@ -5,7 +5,7 @@ import com.example.notes.domain.model.Note
 import com.example.notes.domain.repository.NoteRepository
 
 class InsertNoteUseCase(
-    private val repository: NoteRepository
+    private val repository: NoteRepository,
 ) {
     @Throws(InvalidNoteException::class)
     suspend operator fun invoke(note: Note) {

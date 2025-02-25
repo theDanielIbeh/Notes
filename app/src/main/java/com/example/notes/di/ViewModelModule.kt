@@ -7,9 +7,10 @@ import com.example.notes.screens.signUp.SignUpViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-val viewModelModule = module {
-    viewModelOf(::NoteListViewModel)
-    viewModelOf(::NoteViewModel)
-    viewModelOf(::SignInViewModel)
-    viewModelOf(::SignUpViewModel)
-}
+val viewModelModule =
+    module {
+        viewModelOf(::NoteListViewModel)
+        viewModelOf(::NoteViewModel)
+        viewModelOf(::SignInViewModel)
+        viewModelOf(::SignUpViewModel)
+    }

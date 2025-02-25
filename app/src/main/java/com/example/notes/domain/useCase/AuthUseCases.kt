@@ -11,5 +11,5 @@ data class AuthUseCases(
     val signUp: SignUpUseCase,
     val signUpWithGoogle: SignUpWithGoogleUseCase,
     val signInWithGoogle: SignInWithGoogleUseCase,
-    val createAnonymous: CreateAnonymousUseCase
+    val createAnonymous: CreateAnonymousUseCase,
 )

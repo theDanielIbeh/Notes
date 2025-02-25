@@ -10,14 +10,13 @@ import com.example.notes.domain.model.Note
 @Database(
     entities = [Note::class, Attachment::class],
     version = 1,
-    exportSchema = false
+    exportSchema = false,
 )
-abstract class NoteDatabase: RoomDatabase() {
+abstract class NoteDatabase : RoomDatabase() {
     abstract val noteDao: NoteDao
     abstract val attachmentDao: AttachmentDao
 
     companion object {
         const val DATABASE_NAME = "note_db"
     }
-
 }

@@ -16,9 +16,8 @@ import kotlinx.coroutines.launch
 
 class SignUpViewModel(
     private val application: Application,
-    private val authUseCases: AuthUseCases
+    private val authUseCases: AuthUseCases,
 ) : ViewModel() {
-
     var signUpState = MutableStateFlow(SignUpState())
         private set
 
@@ -60,7 +59,6 @@ class SignUpViewModel(
                 onSignUpWithGoogle(event.credential, event.popUpScreen)
             }
         }
-
     }
 
     private fun updateFirstName(firstName: String) {
@@ -104,7 +102,7 @@ class SignUpViewModel(
                         signUpState.value.email,
                         signUpState.value.password,
                         signUpState.value.firstName,
-                        signUpState.value.lastName
+                        signUpState.value.lastName,
                     )
                     popUpScreen()
                 }
@@ -144,9 +142,10 @@ class SignUpViewModel(
             (name.isEmpty()) -> {
                 signUpState.update {
                     it.copy(
-                        errorState = RegisterErrorState(
-                            firstNameErrorState = firstNameEmptyErrorState
-                        )
+                        errorState =
+                            RegisterErrorState(
+                                firstNameErrorState = firstNameEmptyErrorState,
+                            ),
                     )
                 }
                 false
@@ -155,9 +154,10 @@ class SignUpViewModel(
             (name.length < 3) -> {
                 signUpState.update {
                     it.copy(
-                        errorState = RegisterErrorState(
-                            firstNameErrorState = nameInvalidErrorState
-                        )
+                        errorState =
+                            RegisterErrorState(
+                                firstNameErrorState = nameInvalidErrorState,
+                            ),
                     )
                 }
                 false
@@ -174,9 +174,10 @@ class SignUpViewModel(
             (name.isEmpty()) -> {
                 signUpState.update {
                     it.copy(
-                        errorState = RegisterErrorState(
-                            lastNameErrorState = lastNameEmptyErrorState
-                        )
+                        errorState =
+                            RegisterErrorState(
+                                lastNameErrorState = lastNameEmptyErrorState,
+                            ),
                     )
                 }
                 false
@@ -185,9 +186,10 @@ class SignUpViewModel(
             (name.length < 3) -> {
                 signUpState.update {
                     it.copy(
-                        errorState = RegisterErrorState(
-                            lastNameErrorState = nameInvalidErrorState
-                        )
+                        errorState =
+                            RegisterErrorState(
+                                lastNameErrorState = nameInvalidErrorState,
+                            ),
                     )
                 }
                 false
@@ -204,9 +206,10 @@ class SignUpViewModel(
             (email.isEmpty()) -> {
                 signUpState.update {
                     it.copy(
-                        errorState = RegisterErrorState(
-                            emailErrorState = emailEmptyErrorState
-                        )
+                        errorState =
+                            RegisterErrorState(
+                                emailErrorState = emailEmptyErrorState,
+                            ),
                     )
                 }
                 false
@@ -215,9 +218,10 @@ class SignUpViewModel(
             (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) -> {
                 signUpState.update {
                     it.copy(
-                        errorState = RegisterErrorState(
-                            emailErrorState = emailInvalidErrorState
-                        )
+                        errorState =
+                            RegisterErrorState(
+                                emailErrorState = emailInvalidErrorState,
+                            ),
                     )
                 }
                 false
@@ -236,9 +240,10 @@ class SignUpViewModel(
             (password.isEmpty()) -> {
                 signUpState.update {
                     it.copy(
-                        errorState = RegisterErrorState(
-                            passwordErrorState = passwordEmptyErrorState
-                        )
+                        errorState =
+                            RegisterErrorState(
+                                passwordErrorState = passwordEmptyErrorState,
+                            ),
                     )
                 }
                 false
@@ -247,9 +252,10 @@ class SignUpViewModel(
             (!Regex(pattern).matches(password)) -> {
                 signUpState.update {
                     it.copy(
-                        errorState = RegisterErrorState(
-                            passwordErrorState = passwordInvalidErrorState
-                        )
+                        errorState =
+                            RegisterErrorState(
+                                passwordErrorState = passwordInvalidErrorState,
+                            ),
                     )
                 }
                 false
@@ -266,9 +272,10 @@ class SignUpViewModel(
             (confirmPassword.isEmpty()) -> {
                 signUpState.update {
                     it.copy(
-                        errorState = RegisterErrorState(
-                            cPasswordErrorState = cPasswordEmptyErrorState
-                        )
+                        errorState =
+                            RegisterErrorState(
+                                cPasswordErrorState = cPasswordEmptyErrorState,
+                            ),
                     )
                 }
                 false
@@ -277,9 +284,10 @@ class SignUpViewModel(
             (confirmPassword != signUpState.value.password) -> {
                 signUpState.update {
                     it.copy(
-                        errorState = RegisterErrorState(
-                            cPasswordErrorState = cPasswordInvalidErrorState
-                        )
+                        errorState =
+                            RegisterErrorState(
+                                cPasswordErrorState = cPasswordInvalidErrorState,
+                            ),
                     )
                 }
                 false
@@ -296,9 +304,10 @@ class SignUpViewModel(
             (!terms) -> {
                 signUpState.update {
                     it.copy(
-                        errorState = RegisterErrorState(
-                            termsErrorState = termsUncheckedErrorState
-                        )
+                        errorState =
+                            RegisterErrorState(
+                                termsErrorState = termsUncheckedErrorState,
+                            ),
                     )
                 }
                 false
@@ -310,7 +319,10 @@ class SignUpViewModel(
         }
     }
 
-    private fun onSignUpWithGoogle(credential: Credential, openAndPopUp: () -> Unit) {
+    private fun onSignUpWithGoogle(
+        credential: Credential,
+        openAndPopUp: () -> Unit,
+    ) {
         viewModelScope.launch {
             if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                 val googleIdTokenCredential =

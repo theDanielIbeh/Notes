@@ -8,7 +8,7 @@ import com.google.firebase.database.DatabaseReference
 
 fun noteStorageService(
     firebaseDatabaseReference: DatabaseReference,
-    firebaseAuth: FirebaseAuth
+    firebaseAuth: FirebaseAuth,
 ) = DatabaseServiceImpl(
     reference = firebaseDatabaseReference,
     auth = firebaseAuth,
@@ -20,7 +20,7 @@ fun noteStorageService(
                 title = snapshot.child(NoteTableConstants.TITLE).value?.toString() ?: "",
                 content = snapshot.child(NoteTableConstants.CONTENT).value?.toString() ?: "",
                 deleteFlag = snapshot.child(NoteTableConstants.DELETE_FLAG).value?.toString()?.toIntOrNull() ?: 0,
-                timeStamp = snapshot.child(NoteTableConstants.TIME_STAMP).value?.toString()?.toLongOrNull() ?: System.currentTimeMillis()
+                timeStamp = snapshot.child(NoteTableConstants.TIME_STAMP).value?.toString()?.toLongOrNull() ?: System.currentTimeMillis(),
             )
         } catch (e: Exception) {
             Log.e("firebase", "Error parsing note", e)
@@ -33,7 +33,7 @@ fun noteStorageService(
             NoteTableConstants.TITLE to note.title,
             NoteTableConstants.CONTENT to note.content,
             NoteTableConstants.DELETE_FLAG to note.deleteFlag,
-            NoteTableConstants.TIME_STAMP to note.timeStamp
+            NoteTableConstants.TIME_STAMP to note.timeStamp,
         )
-    }
+    },
 )

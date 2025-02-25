@@ -9,6 +9,6 @@ object State {
      */
     data class ErrorState(
         val hasError: Boolean = false,
-        @StringRes val errorMessageStringResource: Int = R.string.empty_string
+        @StringRes val errorMessageStringResource: Int = R.string.empty_string,
     )
 }

@@ -3,7 +3,6 @@ package com.example.notes.screens.signUp
 import com.example.notes.R
 import com.example.notes.screens.util.State.ErrorState
 
-
 /**
  * SignUp State holding ui input values
  */
@@ -17,9 +16,8 @@ data class SignUpState(
     val termsAgreed: Boolean = false,
     val errorState: RegisterErrorState = RegisterErrorState(),
     val isRegisterSuccessful: Boolean = false,
-    val isRegisterFailed: Boolean = false
+    val isRegisterFailed: Boolean = false,
 )
-
 
 /**
  * Error state in signup holding respective
@@ -32,55 +30,65 @@ data class RegisterErrorState(
     val passwordErrorState: ErrorState = ErrorState(),
     val cPasswordErrorState: ErrorState = ErrorState(),
     val phoneErrorState: ErrorState = ErrorState(),
-    val termsErrorState: ErrorState = ErrorState()
+    val termsErrorState: ErrorState = ErrorState(),
 )
 
-val firstNameEmptyErrorState = ErrorState(
-    hasError = true,
-    errorMessageStringResource = R.string.login_error_msg_empty_fname
-)
+val firstNameEmptyErrorState =
+    ErrorState(
+        hasError = true,
+        errorMessageStringResource = R.string.login_error_msg_empty_fname,
+    )
 
-val lastNameEmptyErrorState = ErrorState(
-    hasError = true,
-    errorMessageStringResource = R.string.login_error_msg_empty_lname
-)
+val lastNameEmptyErrorState =
+    ErrorState(
+        hasError = true,
+        errorMessageStringResource = R.string.login_error_msg_empty_lname,
+    )
 
-val nameInvalidErrorState = ErrorState(
-    hasError = true,
-    errorMessageStringResource = R.string.login_error_msg_invalid_name
-)
+val nameInvalidErrorState =
+    ErrorState(
+        hasError = true,
+        errorMessageStringResource = R.string.login_error_msg_invalid_name,
+    )
 
-val emailEmptyErrorState = ErrorState(
-    hasError = true,
-    errorMessageStringResource = R.string.login_error_msg_empty_email
-)
+val emailEmptyErrorState =
+    ErrorState(
+        hasError = true,
+        errorMessageStringResource = R.string.login_error_msg_empty_email,
+    )
 
-val emailInvalidErrorState = ErrorState(
-    hasError = true,
-    errorMessageStringResource = R.string.login_error_msg_invalid_email
-)
+val emailInvalidErrorState =
+    ErrorState(
+        hasError = true,
+        errorMessageStringResource = R.string.login_error_msg_invalid_email,
+    )
 
-val passwordEmptyErrorState = ErrorState(
-    hasError = true,
-    errorMessageStringResource = R.string.login_error_msg_empty_password
-)
+val passwordEmptyErrorState =
+    ErrorState(
+        hasError = true,
+        errorMessageStringResource = R.string.login_error_msg_empty_password,
+    )
 
-val cPasswordEmptyErrorState = ErrorState(
-    hasError = true,
-    errorMessageStringResource = R.string.login_error_msg_empty_password
-)
+val cPasswordEmptyErrorState =
+    ErrorState(
+        hasError = true,
+        errorMessageStringResource = R.string.login_error_msg_empty_password,
+    )
 
-val passwordInvalidErrorState = ErrorState(
-    hasError = true,
-    errorMessageStringResource = R.string.login_error_msg_invalid_password
-)
+val passwordInvalidErrorState =
+    ErrorState(
+        hasError = true,
+        errorMessageStringResource = R.string.login_error_msg_invalid_password,
+    )
 
-val cPasswordInvalidErrorState = ErrorState(
-    hasError = true,
-    errorMessageStringResource = R.string.login_error_msg_invalid_c_password
-)
+val cPasswordInvalidErrorState =
+    ErrorState(
+        hasError = true,
+        errorMessageStringResource = R.string.login_error_msg_invalid_c_password,
+    )
 
-val termsUncheckedErrorState = ErrorState(
-    hasError = true,
-    errorMessageStringResource = R.string.login_error_msg_unchecked_terms
-)
+val termsUncheckedErrorState =
+    ErrorState(
+        hasError = true,
+        errorMessageStringResource = R.string.login_error_msg_unchecked_terms,
+    )

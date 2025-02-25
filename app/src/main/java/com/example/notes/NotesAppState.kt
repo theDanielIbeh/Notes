@@ -12,7 +12,7 @@ class NotesAppState(
     private val snackbarHostState: SnackbarHostState,
     val navController: NavHostController,
     private val snackbarManager: SnackBarManager,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
 ) {
     init {
         coroutineScope.launch {
@@ -31,7 +31,10 @@ class NotesAppState(
         navController.navigate(route) { launchSingleTop = true }
     }
 
-    fun <T : Any> navigateAndPopUp(route: T, popUp: T) {
+    fun <T : Any> navigateAndPopUp(
+        route: T,
+        popUp: T,
+    ) {
         navController.navigate(route) {
             launchSingleTop = true
             popUpTo(popUp) { inclusive = true }

@@ -9,7 +9,7 @@ import com.example.notes.screens.util.State.ErrorState
  */
 data class SignInErrorState(
     val emailErrorState: ErrorState = ErrorState(),
-    val passwordErrorState: ErrorState = ErrorState()
+    val passwordErrorState: ErrorState = ErrorState(),
 )
 
 /**
@@ -18,15 +18,17 @@ data class SignInErrorState(
 data class SignInState(
     val email: String = "",
     val password: String = "",
-    val errorState: SignInErrorState = SignInErrorState()
+    val errorState: SignInErrorState = SignInErrorState(),
 )
 
-val emailEmptyErrorState = ErrorState(
-    hasError = true,
-    errorMessageStringResource = R.string.login_error_msg_empty_email
-)
+val emailEmptyErrorState =
+    ErrorState(
+        hasError = true,
+        errorMessageStringResource = R.string.login_error_msg_empty_email,
+    )
 
-val passwordEmptyErrorState = ErrorState(
-    hasError = true,
-    errorMessageStringResource = R.string.login_error_msg_empty_password
-)
+val passwordEmptyErrorState =
+    ErrorState(
+        hasError = true,
+        errorMessageStringResource = R.string.login_error_msg_empty_password,
+    )

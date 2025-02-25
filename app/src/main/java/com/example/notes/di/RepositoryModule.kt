@@ -12,36 +12,40 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-val repositoryModule = module {
-    single<NoteRepository> {
-        NoteRepositoryImpl(
-            get(),
-            get(),
-            get(),
-            get(named("noteStorageService")),
-            get(named("attachmentStorageService")),
-            get()
-        )
-    }
-    single<AttachmentRepository> {
-        AttachmentRepositoryImpl(
-            get(),
-            get(named("attachmentStorageService"))
-        )
-    }
-    singleOf(::provideConfiguration)
-    singleOf(::provideWorkManager)
-    singleOf(::WorkManagerRepository)
+val repositoryModule =
+    module {
+        single<NoteRepository> {
+            NoteRepositoryImpl(
+                get(),
+                get(),
+                get(),
+                get(named("noteStorageService")),
+                get(named("attachmentStorageService")),
+                get(),
+            )
+        }
+        single<AttachmentRepository> {
+            AttachmentRepositoryImpl(
+                get(),
+                get(named("attachmentStorageService")),
+            )
+        }
+        singleOf(::provideConfiguration)
+        singleOf(::provideWorkManager)
+        singleOf(::WorkManagerRepository)
 //    singleOf(::NoteRepositoryImpl) { bind<NoteRepository>() }
 //    singleOf(::AttachmentRepositoryImpl) { bind<AttachmentRepository>() }
-}
+    }
 
-private fun provideConfiguration():Configuration =
+private fun provideConfiguration(): Configuration =
     Configuration.Builder()
         .setMinimumLoggingLevel(android.util.Log.DEBUG)
         .build()
 
-private fun provideWorkManager(context: Context, config: Configuration):WorkManager {
+private fun provideWorkManager(
+    context: Context,
+    config: Configuration,
+): WorkManager {
     WorkManager.initialize(context, config)
     return WorkManager.getInstance(context)
 }

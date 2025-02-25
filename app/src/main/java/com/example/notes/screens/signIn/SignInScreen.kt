@@ -35,10 +35,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.notes.R
+import com.example.notes.screens.common.AuthTextField
 import com.example.notes.screens.util.AuthenticationButton
 import com.example.notes.screens.util.Helper.isConnected
 import com.example.notes.screens.util.launchCredManBottomSheet
-import com.example.notes.screens.common.AuthTextField
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -47,7 +47,7 @@ fun SignInScreen(
     onNavigateToSignUp: () -> Unit,
     openAndPopUp: () -> Unit,
     modifier: Modifier = Modifier,
-    loginViewModel: SignInViewModel = koinViewModel<SignInViewModel>()
+    loginViewModel: SignInViewModel = koinViewModel<SignInViewModel>(),
 ) {
     val loginState by loginViewModel.state.collectAsState()
     Log.d("LoginState", loginState.toString())
@@ -58,18 +58,18 @@ fun SignInScreen(
         }
     }
 
-
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = "Login",
             style = MaterialTheme.typography.displayMedium,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
 
         Spacer(modifier = Modifier.height(48.dp))
@@ -85,8 +85,7 @@ fun SignInScreen(
             type = KeyboardType.Email,
             action = ImeAction.Next,
             isError = loginState.errorState.emailErrorState.hasError,
-            errorText = stringResource(loginState.errorState.emailErrorState.errorMessageStringResource)
-
+            errorText = stringResource(loginState.errorState.emailErrorState.errorMessageStringResource),
         )
 
         AuthTextField(
@@ -101,29 +100,32 @@ fun SignInScreen(
             action = ImeAction.Done,
             onKeyboardDone = { loginViewModel.onEvent(SignInEvent.SignIn(openAndPopUp)) },
             isError = loginState.errorState.passwordErrorState.hasError,
-            errorText = stringResource(loginState.errorState.passwordErrorState.errorMessageStringResource)
+            errorText = stringResource(loginState.errorState.passwordErrorState.errorMessageStringResource),
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
-                if (isConnected(application))
+                if (isConnected(application)) {
                     loginViewModel.onEvent(SignInEvent.SignIn(openAndPopUp))
-                else
+                } else {
                     Toast.makeText(application, "No internet connection", Toast.LENGTH_LONG)
                         .show()
+                }
             },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiaryContainer),
             shape = RoundedCornerShape(15.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .height(48.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .height(48.dp),
         ) {
             Text(
-                text = "Login", color = MaterialTheme.colorScheme.onTertiaryContainer,
-                fontWeight = FontWeight.Bold
+                text = "Login",
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
+                fontWeight = FontWeight.Bold,
             )
         }
 
@@ -132,21 +134,22 @@ fun SignInScreen(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = "Don't have an account? ",
                 color = MaterialTheme.colorScheme.primary,
-                fontSize = 14.sp
+                fontSize = 14.sp,
             )
             Text(
                 text = AnnotatedString("Sign Up"),
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = MaterialTheme.colorScheme.tertiary,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.clickable { onNavigateToSignUp() }
+                style =
+                    MaterialTheme.typography.bodySmall.copy(
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                    ),
+                modifier = Modifier.clickable { onNavigateToSignUp() },
             )
         }
 

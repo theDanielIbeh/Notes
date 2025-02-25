@@ -13,5 +13,5 @@ data class NoteUseCases(
     val getNote: GetNoteUseCase,
     val getNoteByTimeStamp: GetNoteByTimeStampUseCase,
     val insertNote: InsertNoteUseCase,
-    val getRecentlyDeletedNotes: GetRecentlyDeletedNotesUseCase
+    val getRecentlyDeletedNotes: GetRecentlyDeletedNotesUseCase,
 )

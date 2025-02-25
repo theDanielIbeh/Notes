@@ -1,5 +1,6 @@
 package com.example.notes.screens
 
+import com.example.notes.domain.model.service.impl.AttachmentStorageServiceImpl
 import com.example.notes.domain.repository.AttachmentRepository
 import com.example.notes.domain.repository.NoteRepository
 import com.example.notes.domain.useCase.AttachmentUseCases
@@ -33,26 +34,38 @@ class NoteViewModelTest {
         repository = mockk<NoteRepository>(relaxed = true)
         attachmentRepository = mockk<AttachmentRepository>(relaxed = true)
 
-        noteUseCases = NoteUseCases(
-            getNotes = GetNotesUseCase(repository),
-            deleteNote = DeleteNoteUseCase(repository, attachmentRepository),
-            insertNote = InsertNoteUseCase(repository),
-            getNote = GetNoteUseCase(repository),
-            getNoteByTimeStamp = GetNoteByTimeStampUseCase(repository),
-            getRecentlyDeletedNotes = GetRecentlyDeletedNotesUseCase(repository)
-        )
+        noteUseCases =
+            NoteUseCases(
+                getNotes = GetNotesUseCase(repository),
+                deleteNote = DeleteNoteUseCase(repository, attachmentRepository),
+                insertNote = InsertNoteUseCase(repository),
+                getNote = GetNoteUseCase(repository),
+                getNoteByTimeStamp = GetNoteByTimeStampUseCase(repository),
+                getRecentlyDeletedNotes = GetRecentlyDeletedNotesUseCase(repository),
+            )
 
-        attachmentUseCases = AttachmentUseCases(
-            getAttachments = GetAttachmentsUseCase(attachmentRepository),
-            deleteAttachment = DeleteAttachmentUseCase(attachmentRepository),
-            insertAttachment = InsertAttachmentUseCase(attachmentRepository),
-            getAttachmentByNoteIdAndUri = GetAttachmentByNoteIdAndUriUseCase(attachmentRepository)
-        )
+        attachmentUseCases =
+            AttachmentUseCases(
+                getAttachments = GetAttachmentsUseCase(attachmentRepository),
+                deleteAttachment =
+                    DeleteAttachmentUseCase(
+                        application = mockk(),
+                        attachmentRepository = attachmentRepository,
+                        attachmentStorageService = mockk<AttachmentStorageServiceImpl>(relaxed = true),
+                    ),
+                insertAttachment =
+                    InsertAttachmentUseCase(
+                        application = mockk(),
+                        attachmentRepository = attachmentRepository,
+                        attachmentStorageService = mockk<AttachmentStorageServiceImpl>(relaxed = true),
+                    ),
+                getAttachmentByNoteIdAndUri = GetAttachmentByNoteIdAndUriUseCase(attachmentRepository),
+            )
 
         viewModel =
             NoteViewModel(
                 noteUseCases = noteUseCases,
-                attachmentUseCases = attachmentUseCases
+                attachmentUseCases = attachmentUseCases,
             )
     }
 

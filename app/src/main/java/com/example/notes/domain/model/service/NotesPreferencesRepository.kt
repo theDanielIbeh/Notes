@@ -5,7 +5,16 @@ import com.google.gson.Gson
 
 interface NotesPreferencesRepository {
     val gson: Gson
-    fun <T: Any?> getPreference(keyClassType: Class<T>, key: String): LiveData<T?>
-    suspend fun <T> savePreference(key: String, value: T):Boolean
+
+    fun <T : Any?> getPreference(
+        keyClassType: Class<T>,
+        key: String,
+    ): LiveData<T?>
+
+    suspend fun <T> savePreference(
+        key: String,
+        value: T,
+    ): Boolean
+
     suspend fun clearDataStore()
 }

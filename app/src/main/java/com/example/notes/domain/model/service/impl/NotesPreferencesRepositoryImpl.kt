@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 
 class NotesPreferencesRepositoryImpl(
-    private val datastore: DataStore<Preferences>
+    private val datastore: DataStore<Preferences>,
 ) : NotesPreferencesRepository {
     override val gson: Gson = Gson()
 
@@ -30,7 +30,10 @@ class NotesPreferencesRepositoryImpl(
         private const val FAIL = -1
     }
 
-    override suspend fun <T> savePreference(key: String, value: T): Boolean {
+    override suspend fun <T> savePreference(
+        key: String,
+        value: T,
+    ): Boolean {
         when (value) {
             is String -> {
                 datastore.edit { preferences ->
@@ -88,9 +91,11 @@ class NotesPreferencesRepositoryImpl(
         return false
     }
 
-
     @Suppress("UNCHECKED_CAST")
-    override fun <T : Any?> getPreference(keyClassType: Class<T>, key: String): LiveData<T?> =
+    override fun <T : Any?> getPreference(
+        keyClassType: Class<T>,
+        key: String,
+    ): LiveData<T?> =
         datastore.data.catch {
             if (it is IOException) {
                 Log.e(TAG, "Error reading preferences.", it)
@@ -141,7 +146,6 @@ class NotesPreferencesRepositoryImpl(
                         }
                     }
                 }
-
             }.distinctUntilChanged().asLiveData()
 
     override suspend fun clearDataStore() {

@@ -11,11 +11,12 @@ import java.util.Date
 import java.util.Locale
 
 object Helper {
-    fun Context.getActivity(): AppCompatActivity? = when (this) {
-        is AppCompatActivity -> this
-        is ContextWrapper -> baseContext.getActivity()
-        else -> null
-    }
+    fun Context.getActivity(): AppCompatActivity? =
+        when (this) {
+            is AppCompatActivity -> this
+            is ContextWrapper -> baseContext.getActivity()
+            else -> null
+        }
 
     fun isConnected(context: Context): Boolean {
         val connectivityManager =
