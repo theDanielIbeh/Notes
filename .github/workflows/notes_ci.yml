@@ -30,8 +30,11 @@ jobs:
       - name: Grant Execute Permission for gradlew
         run: sudo chmod +x gradlew
 
-      - name: Run Ktlint
-        run: ./gradlew ktlint
+      - name: Run Ktlint Format
+        run: ./gradlew ktlintFormat
+
+      - name: Run Ktlint Check
+        run: ./gradlew ktlintCheck
 
       - name: Build with Gradle
         run: ./gradlew assembleDebug
