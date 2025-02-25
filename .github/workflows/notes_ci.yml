@@ -22,11 +22,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Ktlint
-        run: |
-          curl -sSLO https://github.com/pinterest/ktlint/releases/latest/download/ktlint &&
-          chmod a+x ktlint
-
       - name: Grant Execute Permission for gradlew
         run: sudo chmod +x gradlew
 
